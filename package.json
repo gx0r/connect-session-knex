@@ -1,0 +1,16 @@
+{
+  "name": "connect-sqlite",
+  "description": "SQLite session store for Connect",
+  "version": "0.0.1",
+  "author": "tnantoka <bornneet@livedoor.com>",
+  "main": "lib/connect-sqlite",
+  "dependencies": {
+    "sqlite": ">= 1.0.4"
+  },
+  "devDependencies": {
+    "connect": "1.4.x"
+  },
+  "engines": {
+    "node": ">= 0.1.98"
+  }
+}
