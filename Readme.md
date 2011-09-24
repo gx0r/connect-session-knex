@@ -1,5 +1,5 @@
 
-# Connect Redis
+# Connect SQLite
 
 connect-sqlite is a SQLite session store, just copied connect-redis.
 
