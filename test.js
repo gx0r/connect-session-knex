@@ -3,11 +3,11 @@
  * Module dependencies.
  */
 
-var assert = require('assert')
-  , connect = require('connect')
-  , SQLiteStore = require('./lib/connect-sqlite.js')(connect);
+var assert = require('assert'),
+  connect = require('connect'),
+  SQLiteStore = require('./lib/connect-sqlite3.js')(connect);
 
-var store = new SQLiteStore;
+var store = new SQLiteStore();
 var store_alt = new SQLiteStore({ db: 'sessions2' });
 
 store.client.on('connect', function(){
@@ -29,7 +29,7 @@ store.client.on('connect', function(){
         // #db option
         store_alt.length(function (err, len) {
           assert.ok(!err, '#alt db got an error');
-          assert.equal(0, len, '#alt db with keys'); 
+          assert.equal(0, len, '#alt db with keys');
 
           // #clear()
           store.clear(function(err, ok){
