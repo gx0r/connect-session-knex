@@ -1,13 +1,10 @@
+# Connect SQLite3
 
-# Connect SQLite
-
-connect-sqlite is a SQLite session store, just copied connect-redis.
-
- connect-sqlite support only connect `>= 1.4.0`.
+connect-sqlite3 is a SQLite3 session store modeled after the TJ's connect-redis store.
 
 ## Installation
 
-	  $ npm install connect-sqlite
+	  $ npm install connect-sqlite3
 
 ## Options
 
