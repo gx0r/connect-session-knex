@@ -1,16 +1,25 @@
 {
-  "name": "connect-sqlite",
-  "description": "SQLite session store for Connect",
-  "version": "0.0.1",
-  "author": "tnantoka <bornneet@livedoor.com>",
-  "main": "lib/connect-sqlite",
+  "name": "connect-sqlite3",
+  "description": "SQLite3 session store for Connect",
+  "version": "0.8.0",
+  "author": "David Feinberg",
+  "main": "lib/connect-sqlite3",
   "dependencies": {
-    "sqlite": ">= 1.0.4"
+    "sqlite": "~2.1.5"
   },
   "devDependencies": {
     "connect": "1.4.x"
   },
   "engines": {
-    "node": ">= 0.1.98"
-  }
+    "node": "~0.6.11"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rawberg/connect-sqlite3.git"
+  },  
+  "licenses": [
+    {
+      "type": "MIT"
+    }
+  ]  
 }
