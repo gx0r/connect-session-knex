@@ -47,8 +47,8 @@ store.client.on('connect', function(){
                   store.length(function(err, len){
                    assert.equal(0, len, '#set() null');
                    console.log('done');
-//                   store.client.end(); 
-//                   store_alt.client.end();
+                   //store.client.end();
+                   //store_alt.client.end();
                   });
                 });
               });
@@ -56,7 +56,7 @@ store.client.on('connect', function(){
           });
         });
       });
-    })
+    });
   });
 });
 
