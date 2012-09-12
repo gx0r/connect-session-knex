@@ -10,7 +10,7 @@ connect-sqlite3 is a SQLite3 session store modeled after the TJ's connect-redis 
 ## Options
 
   - `db='sessions'` Database table name
-  - `db= Database file name (defaults to table name)
+  - `db='sessions'` Database file name (defaults to table name)
   - `dir='.'` Direcotry to save '<db>.db' file
 
 ## Usage
