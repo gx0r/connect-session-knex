@@ -1,7 +1,7 @@
-
 # Connect SQLite3
 
-connect-sqlite3 is a SQLite3 session store, modeled after connect-redis.
+connect-sqlite3 is a SQLite3 session store modeled after the TJ's connect-redis store.
+
 
 ## Installation
 

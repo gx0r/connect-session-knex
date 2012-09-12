@@ -2,6 +2,7 @@
 ==================
     - re-wrote unit tests with Mocha and Should.js
     - added option param for db file name (seperate from table name)
+    - merged pull request from Nibbler999 (added support for returning undefined for unknown sessions)
     - updated readme
 
 0.8.0 / 2012-09-10
