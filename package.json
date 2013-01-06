@@ -1,11 +1,11 @@
 {
   "name": "connect-sqlite3",
   "description": "SQLite3 session store for Connect",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "author": "David Feinberg",
   "main": "lib/connect-sqlite3",
   "dependencies": {
-    "sqlite3": ">=2.1.5"
+    "sqlite3": "git+https://github.com/developmentseed/node-sqlite3.git"
   },
   "devDependencies": {
     "connect": ">=1.0.0"
