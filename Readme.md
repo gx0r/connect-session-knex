@@ -23,9 +23,14 @@ connect-sqlite3 is a SQLite3 session store modeled after the TJ's connect-redis 
       connect.session({ store: new SQLiteStore, secret: 'your secret' })
     );
 
-  with express    
+  with express
 
+    3.x:
     var SQLiteStore = require('connect-sqlite3')(express);
+
+    4.x:
+    var session = require('express-session');
+    var SQLiteStore = require('connect-sqlite3')(session);
 
     app.configure(function() {
       app.set('views', __dirname + '/views');
