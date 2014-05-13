@@ -1,7 +1,7 @@
 {
   "name": "connect-sqlite3",
   "description": "SQLite3 session store for Connect",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "author": "David Feinberg",
   "main": "lib/connect-sqlite3",
   "dependencies": {
