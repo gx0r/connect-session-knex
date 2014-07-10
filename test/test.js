@@ -1,9 +1,10 @@
 var should = require('should'),
     connect = require('connect'),
+    session = require('express-session'),
     util = require('util'),
-    SQLiteStore = require('../lib/connect-sqlite3.js')(connect);
+    SQLiteStore = require('../lib/connect-session-knex.js')(session);
 
-  
+
 describe('connect-sqlite3 basic test suite', function() {
     before(function() {
         this.memStore = new SQLiteStore({db: ':memory:', dir: 'dbs'});
@@ -16,7 +17,7 @@ describe('connect-sqlite3 basic test suite', function() {
     it('it should save a new session record', function(done) {
         this.memStore.set('1111222233334444', {cookie: {maxAge:2000}, name: 'sample name'}, function(err, rows) {
             should.not.exist(err, 'set() returned an error');
-            rows.should.be.empty;
+            rows.should.eql([1]);
             done();
         });
     });
@@ -67,8 +68,8 @@ describe('connect-sqlite3 basic test suite', function() {
         var that = this;
         this.memStore.set('555666777', {cookie: {maxAge:1000}, name: 'Rob Dobilina'}, function(err, rows) {
             should.not.exist(err, 'set() returned an error');
-            rows.should.be.empty;
-            
+            rows.should.eql([1]);
+
             that.memStore.destroy('555666777', function(err) {
                 should.not.exist(err, 'destroy returned an error');
 
@@ -76,8 +77,8 @@ describe('connect-sqlite3 basic test suite', function() {
                     should.not.exist(err, 'session count after destroy returned an error');
                     should.exist(len);
                     len.should.equal(0);
-                    done();                        
-                });                  
+                    done();
+                });
             });
         });
     });
