@@ -1,4 +1,4 @@
-# Connect SQLite3
+# Connect Session Knex
 
 connect-session-knex is a session store using [knex.js](http://knexjs.org/) as the backend.
 
