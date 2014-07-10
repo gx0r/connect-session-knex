@@ -1,10 +1,10 @@
 {
-  "name": "connect-sqlite3",
-  "description": "SQLite3 session store for Connect",
-  "version": "0.9.3",
-  "author": "David Feinberg",
-  "main": "lib/connect-sqlite3",
+  "name": "connect-session-knex",
+  "description": "Knex.js session store for Connect",
+  "version": "0.0.1",
+  "main": "lib/connect-session-knex",
   "dependencies": {
+    "knex": "^0.6.21",
     "sqlite3": "git+https://github.com/developmentseed/node-sqlite3.git"
   },
   "devDependencies": {
@@ -15,11 +15,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/rawberg/connect-sqlite3.git"
-  },  
+    "url": "git://github.com/llambda/connect-session-knex.git"
+  },
   "licenses": [
     {
       "type": "MIT"
     }
-  ]  
+  ]
 }
