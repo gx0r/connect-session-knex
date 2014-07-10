@@ -1,22 +1,21 @@
 # Connect SQLite3
 
-connect-sqlite3 is a SQLite3 session store modeled after the TJ's connect-redis store.
+connect-session-knex is a session store using [knex.js](http://knexjs.org/) as the backend.
 
 
 ## Installation
 
-	  $ npm install connect-sqlite3
+	  $ npm install connect-session-knex
 
 ## Options
 
-  - `table='sessions'` Database table name
-  - `db='sessionsDB'` Database file name (defaults to table name)
-  - `dir='.'` Direcotry to save '<db>.db' file
+ - `tablename='sessions'` Tablename to use
+ - `knex` knex instance to use. If not provided, creates a new knex using sqlite3 with filename 'connect-session-knex.sqlite'
 
 ## Usage
 
     var connect = require('connect'),
-        SQLiteStore = require('connect-sqlite3')(connect);
+        SQLiteStore = require('connect-session-knex')(connect);
 
     connect.createServer(
       connect.cookieParser(),
@@ -26,11 +25,11 @@ connect-sqlite3 is a SQLite3 session store modeled after the TJ's connect-redis 
   with express
 
     3.x:
-    var SQLiteStore = require('connect-sqlite3')(express);
+    var SQLiteStore = require('connect-session-knex')(express);
 
     4.x:
     var session = require('express-session');
-    var SQLiteStore = require('connect-sqlite3')(session);
+    var SQLiteStore = require('connect-session-knex')(session);
 
     app.configure(function() {
       app.set('views', __dirname + '/views');
@@ -46,4 +45,3 @@ connect-sqlite3 is a SQLite3 session store modeled after the TJ's connect-redis 
       app.use(app.router);
       app.use(express.static(__dirname + '/public'));
     });
-
