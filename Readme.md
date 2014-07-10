@@ -25,23 +25,22 @@ connect-session-knex is a session store using [knex.js](http://knexjs.org/) as t
   with express
 
     3.x:
-    var SQLiteStore = require('connect-session-knex')(express);
-
-    4.x:
-    var session = require('express-session');
-    var SQLiteStore = require('connect-session-knex')(session);
+    var KnexSessionStore = require('connect-session-knex')(express);
 
     app.configure(function() {
-      app.set('views', __dirname + '/views');
-      app.set('view engine', 'ejs');
-      app.use(express.bodyParser());
-      app.use(express.methodOverride());
-      app.use(express.cookieParser());
       app.use(express.session({
-        store: new SQLiteStore,
+        store: new KnexSessionStore,
         secret: 'your secret',
         cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 1 week
       }));
-      app.use(app.router);
-      app.use(express.static(__dirname + '/public'));
     });
+
+    4.x:
+    var session = require('express-session');
+    var KnexSessionStore = require('connect-session-knex')(session);
+
+    app.use(express.session({
+      store: new KnexSessionStore,
+      secret: 'your secret',
+      cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 1 week
+    }));
