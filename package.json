@@ -4,8 +4,7 @@
   "version": "0.0.1",
   "main": "lib/connect-session-knex",
   "dependencies": {
-    "knex": "^0.6.21",
-    "sqlite3": "git+https://github.com/developmentseed/node-sqlite3.git"
+    "knex": "^0.6.21"
   },
   "devDependencies": {
     "connect": ">=1.0.0"
@@ -15,11 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/llambda/connect-session-knex.git"
+    "url": "git@github.com:llambda/connect-session-knex.git"
   },
-  "licenses": [
-    {
-      "type": "MIT"
-    }
-  ]
+  "bugs": {
+    "url": "https://github.com/llambda/connect-session-knex/issues"
+  },
+  "homepage": "https://github.com/llambda/connect-session-knex",
+  "scripts": {
+    "test": "cd spec && mocha"
+  },
+  "license": "MIT"
 }
