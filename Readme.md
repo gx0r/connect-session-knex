@@ -15,11 +15,11 @@ connect-session-knex is a session store using [knex.js](http://knexjs.org/) as t
 ## Usage
 
     var connect = require('connect'),
-        SQLiteStore = require('connect-session-knex')(connect);
+        KnexSessionStore = require('connect-session-knex')(connect);
 
     connect.createServer(
       connect.cookieParser(),
-      connect.session({ store: new SQLiteStore, secret: 'your secret' })
+      connect.session({ store: new KnexSessionStore, secret: 'your secret' })
     );
 
   with express
