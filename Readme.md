@@ -13,6 +13,7 @@ connect-session-knex is a session store using [knex.js](http://knexjs.org/) as t
  - `knex` knex instance to use. If not provided, creates a new knex using sqlite3 with filename 'connect-session-knex.sqlite'
 
 ## Usage
+  With connect:
 
     var connect = require('connect'),
         KnexSessionStore = require('connect-session-knex')(connect);
