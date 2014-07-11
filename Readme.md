@@ -22,9 +22,8 @@ connect-session-knex is a session store using [knex.js](http://knexjs.org/) as t
       connect.session({ store: new KnexSessionStore, secret: 'your secret' })
     );
 
-  with express
-
-    3.x:
+  With express 3.x:
+  
     var KnexSessionStore = require('connect-session-knex')(express);
 
     app.configure(function() {
@@ -35,7 +34,8 @@ connect-session-knex is a session store using [knex.js](http://knexjs.org/) as t
       }));
     });
 
-    4.x:
+  With express 4.x:
+  
     var session = require('express-session');
     var KnexSessionStore = require('connect-session-knex')(session);
 
