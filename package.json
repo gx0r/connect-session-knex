@@ -7,7 +7,11 @@
     "knex": "^0.6.21"
   },
   "devDependencies": {
-    "express-session": "^1.6.4"
+    "connect": "^3.0.2",
+    "express-session": "^1.6.4",
+    "pg": "^3.3.0",
+    "should": "^4.0.4",
+    "sqlite3": "^2.2.3"
   },
   "engines": {
     "node": ">=0.4.x"
