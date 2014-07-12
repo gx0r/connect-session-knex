@@ -17,14 +17,16 @@ var tasks = []
 
 knex.schema.dropTableIfExists('sessions').then(function () {
 
-  console.time('bench'+count)
 
   store = new KnexStore({
     knex: knex
   })
 
+  console.time('bench'+count)
+
+
   for (; i < count; i++) {
-    tasks.push(store.set('testsession'+i, {cookie: {maxAge:2000}, name: 'sample name'}))
+    tasks.push(store.set('testsession'+i, {cookie: {maxAge:2000, expires: new Date() }, name: 'sample name'}))
   }
 
   Promise.all(tasks, {concurrency: 1}).then(function() {
