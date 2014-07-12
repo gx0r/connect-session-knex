@@ -48,9 +48,9 @@ connect-session-knex is a session store using [knex.js](http://knexjs.org/) as t
     
 ## Benchmarks
 
-### Insert 1000 sessions
+### Insert 10,000 sessions
 
-sqlite3: 1610ms
+sqlite3: 1,610 ms
 
-postgres 9.3: 8921ms
+postgres 9.3: 8,921 ms
 
