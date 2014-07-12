@@ -45,3 +45,11 @@ connect-session-knex is a session store using [knex.js](http://knexjs.org/) as t
       secret: 'your secret',
       cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 1 week
     }));
+    
+## Benchmarks
+
+# Insert 1000 sessions
+
+sqlite3: 1610ms
+postgres 9.3: 8921ms
+
