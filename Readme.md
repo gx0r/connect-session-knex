@@ -58,7 +58,9 @@ connect-session-knex with sqlite3: 16,128 ms
 
 ### PostgreSQL 9.3
 
-connect-session-knex with postgres 9.3: 8,921 ms
+connect-session-knex with postgres 9.3: 8,921 ms (query code prior to 2014/7/14)
+
+connect-session-knex with postgres 9.3 and optimized query: 3,686 ms (query code on 2014/7/14)
 
 [connect-pgsql](https://github.com/tpaszun/connect-pgsql) 2,255 ms
 
