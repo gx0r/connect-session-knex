@@ -54,3 +54,4 @@ sqlite3: 1,610 ms
 
 postgres 9.3: 8,921 ms
 
+[connect-redis](https://github.com/visionmedia/connect-redis): 330ms
