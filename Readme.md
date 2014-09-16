@@ -9,8 +9,8 @@ connect-session-knex is a session store using [knex.js](http://knexjs.org/), whi
 
 ## Options
 
- - `tablename='sessions'` Tablename to use
- - `knex` knex instance to use. If not provided, creates a new knex using sqlite3 with filename 'connect-session-knex.sqlite'
+ - `tablename='sessions'` Tablename to use. Defaults to 'sessions'.
+ - `knex` knex instance to use. Defaults to a new knex instance, using sqlite3 with a file named 'connect-session-knex.sqlite'
 
 ## Usage
   With connect:
