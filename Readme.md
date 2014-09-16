@@ -58,9 +58,9 @@ connect-session-knex with sqlite3: 16,128 ms
 
 ### PostgreSQL 9.3
 
-connect-session-knex with postgres 9.3: 8,921 ms (query code prior to 2014/7/14)
+connect-session-knex v0.0.1: 8,921 ms
 
-connect-session-knex with postgres 9.3 and optimized query: 3,686 ms (query code on 2014/7/14)
+connect-session-knex v0.0.2: 3,686 ms
 
 [connect-pgsql](https://github.com/tpaszun/connect-pgsql) 2,255 ms
 
@@ -69,7 +69,7 @@ connect-session-knex with postgres 9.3 and optimized query: 3,686 ms (query code
 [connect-redis](https://github.com/visionmedia/connect-redis): 330 ms
 
 ### Cassandra
-[node-cassandra-cql](https://github.com/jorgebay/node-cassandra-cql) v0.4.4:  2640ms
+[node-cassandra-cql](https://github.com/jorgebay/node-cassandra-cql) v0.4.4:  2,640ms
 
 
 
