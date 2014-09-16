@@ -69,7 +69,7 @@ connect-session-knex with postgres 9.3 and optimized query: 3,686 ms (query code
 [connect-redis](https://github.com/visionmedia/connect-redis): 330 ms
 
 ### Cassandra
-node-cassandra-cql 0.4.4:  2640ms
+[node-cassandra-cql](https://github.com/jorgebay/node-cassandra-cql) v0.4.4:  2640ms
 
 
 
