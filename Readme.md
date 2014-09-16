@@ -1,6 +1,6 @@
 # Connect Session Knex
 
-connect-session-knex is a session store using [knex.js](http://knexjs.org/) as the backend.
+connect-session-knex is a session store using [knex.js](http://knexjs.org/), which is a SQL query builder for Postgres, MySQL, MariaDB and SQLite3.
 
 
 ## Installation
