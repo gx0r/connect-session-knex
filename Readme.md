@@ -69,7 +69,7 @@ connect-session-knex v0.0.2: 3,686 ms
 [connect-redis](https://github.com/visionmedia/connect-redis): 330 ms
 
 ### Cassandra
-[node-cassandra-cql](https://github.com/jorgebay/node-cassandra-cql) v0.4.4:  2,640ms
+[connect-cassandra-cql](https://github.com/asafyish/connect-cassandra-cql) v0.1.4:  2,640ms
 
 
 
