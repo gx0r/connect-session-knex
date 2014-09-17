@@ -2,6 +2,7 @@
 
 connect-session-knex is a session store using [knex.js](http://knexjs.org/), which is a SQL query builder for Postgres, MySQL, MariaDB and SQLite3.
 
+Note: I could not get it to work with MariaDB using the mysql or mariadb drivers.
 
 ## Installation
 
