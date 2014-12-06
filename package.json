@@ -1,17 +1,10 @@
 {
   "name": "connect-session-knex",
   "description": "Knex.js session store for Connect",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "lib/connect-session-knex",
   "dependencies": {
-    "knex": "^0.6.21"
-  },
-  "devDependencies": {
-    "connect": "^3.0.2",
-    "express-session": "^1.6.4",
-    "pg": "^3.3.0",
-    "should": "^4.0.4",
-    "sqlite3": "^2.2.3"
+    "knex": "^0.7.3"
   },
   "engines": {
     "node": ">=0.4.x"
@@ -27,5 +20,10 @@
   "scripts": {
     "test": "cd spec && mocha"
   },
-  "license": "MIT"
+  "license": "ISC",
+  "devDependencies": {
+    "connect": "^3.3.3",
+    "express-session": "^1.9.3",
+    "should": "^4.3.0"
+  }
 }
