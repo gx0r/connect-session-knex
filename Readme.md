@@ -49,28 +49,4 @@ Note: I could not get it to work with MariaDB using the mysql or mariadb drivers
     
 ## Benchmarks
 
-### Insert 10,000 sessions
-
-### Sqlite 3
-
-connect-session-knex with sqlite3: 16,128 ms
-
-[connect-sqlite3](https://github.com/rawberg/connect-sqlite3): 6,829 ms
-
-### PostgreSQL 9.3
-
-connect-session-knex v0.0.1: 8,921 ms
-
-connect-session-knex v0.0.2: 3,686 ms
-
-[connect-pgsql](https://github.com/tpaszun/connect-pgsql) 2,255 ms
-
-### Redis
-
-[connect-redis](https://github.com/visionmedia/connect-redis): 330 ms
-
-### Cassandra
-[connect-cassandra-cql](https://github.com/asafyish/connect-cassandra-cql) v0.1.4:  2,640ms
-
-
-
+https://github.com/llambda/express-session-benchmarks
