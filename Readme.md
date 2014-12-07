@@ -1,8 +1,6 @@
 # Connect Session Knex
 
-connect-session-knex is a session store using [knex.js](http://knexjs.org/), which is a SQL query builder for Postgres, MySQL, MariaDB and SQLite3.
-
-Note: I could not get it to work with MariaDB using the mysql or mariadb drivers.
+connect-session-knex is a session store using [knex.js](http://knexjs.org/), which is a SQL query builder for Postgres, MySQL, MariaDB and SQLite3. Note: I could not get it to work with MariaDB using the mysql or mariadb drivers.
 
 ## Installation
 
@@ -14,27 +12,6 @@ Note: I could not get it to work with MariaDB using the mysql or mariadb drivers
  - `knex` knex instance to use. Defaults to a new knex instance, using sqlite3 with a file named 'connect-session-knex.sqlite'
 
 ## Usage
-  With connect:
-
-    var connect = require('connect'),
-        KnexSessionStore = require('connect-session-knex')(connect);
-
-    connect.createServer(
-      connect.cookieParser(),
-      connect.session({ store: new KnexSessionStore, secret: 'your secret' })
-    );
-
-  With express 3.x:
-  
-    var KnexSessionStore = require('connect-session-knex')(express);
-
-    app.configure(function() {
-      app.use(express.session({
-        store: new KnexSessionStore,
-        secret: 'your secret',
-        cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 1 week
-      }));
-    });
 
   With express 4.x:
   
@@ -46,6 +23,29 @@ Note: I could not get it to work with MariaDB using the mysql or mariadb drivers
       secret: 'your secret',
       cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 1 week
     }));
+    
+  With express 3.x:
+  
+    var KnexSessionStore = require('connect-session-knex')(express);
+
+    app.configure(function() {
+      app.use(express.session({
+        store: new KnexSessionStore,
+        secret: 'your secret',
+        cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 1 week
+      }));
+    });
+    
+  With connect:
+
+    var connect = require('connect'),
+        KnexSessionStore = require('connect-session-knex')(connect);
+
+    connect.createServer(
+      connect.cookieParser(),
+      connect.session({ store: new KnexSessionStore, secret: 'your secret' })
+    );
+
     
 ## Benchmarks
 
