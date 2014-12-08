@@ -4,7 +4,9 @@ connect-session-knex is a session store using [knex.js](http://knexjs.org/), whi
 
 ## Installation
 
-	  $ npm install connect-session-knex
+```sh
+$ npm install connect-session-knex
+```
 
 ## Options
 
@@ -13,40 +15,53 @@ connect-session-knex is a session store using [knex.js](http://knexjs.org/), whi
 
 ## Usage
 
-  With express 4.x:
-  
-    var session = require('express-session');
-    var KnexSessionStore = require('connect-session-knex')(session);
+With express 4.x:
 
-    app.use(express.session({
-      store: new KnexSessionStore,
-      secret: 'your secret',
-      cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 1 week
-    }));
-    
-  With express 3.x:
-  
-    var KnexSessionStore = require('connect-session-knex')(express);
+```js
+var session = require('express-session');
+var KnexSessionStore = require('connect-session-knex')(session);
+var store = new KnexSessionStore(/* options here */);
 
-    app.configure(function() {
-      app.use(express.session({
-        store: new KnexSessionStore,
-        secret: 'your secret',
-        cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 1 week
-      }));
-    });
-    
-  With connect:
+app.use(express.session({
+  store: store,
+  secret: 'your secret',
+  cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 1 week
+}));
+```
 
-    var connect = require('connect'),
-        KnexSessionStore = require('connect-session-knex')(connect);
+With express 3.x:
 
-    connect.createServer(
-      connect.cookieParser(),
-      connect.session({ store: new KnexSessionStore, secret: 'your secret' })
-    );
+```js
+var express = require('express')
+var KnexSessionStore = require('connect-session-knex')(express);
+var store = new KnexSessionStore(/* options here */);
 
-    
+app.configure(function() {
+  app.use(express.session({
+    store: store,
+    secret: 'your secret',
+    cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 1 week
+  }));
+});
+```
+
+With connect:
+
+```js
+var connect = require('connect'),
+var KnexSessionStore = require('connect-session-knex')(connect);
+var store = new KnexSessionStore(/* options here */);
+
+connect.createServer(
+  connect.cookieParser(),
+  connect.session({
+    store: store,
+    secret: 'your secret'
+  })
+);
+```
+
+
 ## Benchmarks
 
 https://github.com/llambda/express-session-benchmarks
