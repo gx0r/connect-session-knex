@@ -22,7 +22,7 @@ var session = require('express-session');
 var KnexSessionStore = require('connect-session-knex')(session);
 var store = new KnexSessionStore(/* options here */);
 
-app.use(express.session({
+app.use(session({
   store: store,
   secret: 'your secret',
   cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 1 week
