@@ -1,7 +1,7 @@
 {
   "name": "connect-session-knex",
   "description": "Knex.js session store for Connect",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "lib/connect-session-knex",
   "dependencies": {
     "knex": "^0.7.3"
