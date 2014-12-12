@@ -24,6 +24,7 @@
   "devDependencies": {
     "connect": "^3.3.3",
     "express-session": "^1.9.3",
-    "should": "^4.3.0"
+    "should": "^4.3.0",
+    "sqlite3": "^3.0.4"
   }
 }
