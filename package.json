@@ -18,12 +18,13 @@
   },
   "homepage": "https://github.com/llambda/connect-session-knex",
   "scripts": {
-    "test": "cd spec && mocha"
+    "test": "cd spec && ../node_modules/mocha/bin/mocha"
   },
   "license": "ISC",
   "devDependencies": {
     "connect": "^3.3.3",
     "express-session": "^1.9.3",
+    "mocha": "^2.0.1",
     "should": "^4.3.0",
     "sqlite3": "^3.0.4"
   }
