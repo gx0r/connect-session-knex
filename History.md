@@ -35,3 +35,10 @@
 ==================
 
   * Optimized SQLite3 query
+
+
+1.0.6
+==================
+
+  * MySQL/Mariadb support
+
