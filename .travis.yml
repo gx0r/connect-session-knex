@@ -5,6 +5,7 @@ node_js:
 
 before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
+  - mysql -e 'create database travis_ci_test;'
 
 addons:
   postgresql: "9.3"
