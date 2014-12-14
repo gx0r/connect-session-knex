@@ -24,7 +24,9 @@
   "devDependencies": {
     "connect": "^3.3.3",
     "express-session": "^1.9.3",
+    "knex": "^0.7.3",
     "mocha": "^2.0.1",
+    "pg": "^4.1.1",
     "should": "^4.3.0",
     "sqlite3": "^3.0.4"
   }
