@@ -12,7 +12,7 @@ $ npm install connect-session-knex
 
 ## Usage
 
-With express 4.x:
+With express 4.x and the default sqlite3 DB:
 
 ```js
 var session = require('express-session');
@@ -25,6 +25,33 @@ app.use(session({
   cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 1 week
 }));
 ```
+
+With express 4.x and PostgreSQL:
+
+```js
+var session = require('express-session');
+var KnexSessionStore = require('connect-session-knex')(session);
+var knexPg = require('knex')({
+  client: 'pg',
+  connection: {
+    host: '127.0.0.1',
+    user: 'postgres',
+    password: '',
+    database: 'travis_ci_test'
+  }
+});
+var store = new KnexSessionStore({
+  knex: knexPg,
+  tablename: 'sessions'
+});
+
+app.use(session({
+  store: store,
+  secret: 'your secret',
+  cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 1 week
+}));
+```
+
 
 With express 3.x:
 
