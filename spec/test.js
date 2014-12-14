@@ -60,7 +60,7 @@ describe('connect-session-knex sqlite3 test suite', function() {
 		});
 	});
 
-	it('it should gracefully handle retrieving an unkonwn session', function(done) {
+	it('it should gracefully handle retrieving an unknown session', function(done) {
 		this.store.get('hope-and-change', function(err, rows) {
 			should.not.exist(err, 'get() unknown session returned an error');
 			should.equal(undefined, rows, 'unknown session is not undefined');
@@ -141,7 +141,7 @@ describe('connect-session-knex postgreSQL test suite', function() {
 		});
 	});
 
-	it('it should gracefully handle retrieving an unkonwn session', function(done) {
+	it('it should gracefully handle retrieving an unknown session', function(done) {
 		this.store.get('hope-and-change', function(err, rows) {
 			should.not.exist(err, 'get() unknown session returned an error');
 			should.equal(undefined, rows, 'unknown session is not undefined');
@@ -221,7 +221,7 @@ describe('connect-session-knex MySQL test suite', function() {
 		});
 	});
 
-	it('it should gracefully handle retrieving an unkonwn session', function(done) {
+	it('it should gracefully handle retrieving an unknown session', function(done) {
 		this.store.get('hope-and-change', function(err, rows) {
 			should.not.exist(err, 'get() unknown session returned an error');
 			should.equal(undefined, rows, 'unknown session is not undefined');
