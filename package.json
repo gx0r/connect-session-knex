@@ -3,9 +3,6 @@
   "description": "Knex.js session store for Connect",
   "version": "1.0.6",
   "main": "lib/connect-session-knex",
-  "dependencies": {
-    "knex": "^0.7.3"
-  },
   "engines": {
     "node": ">=0.4.x"
   },
@@ -26,6 +23,7 @@
     "express-session": "^1.9.3",
     "knex": "^0.7.3",
     "mocha": "^2.0.1",
+    "mysql": "^2.5.3",
     "pg": "^4.1.1",
     "should": "^4.3.0",
     "sqlite3": "^3.0.4"
