@@ -1,5 +1,7 @@
 # Connect Session Knex
 
+[![Build Status](https://travis-ci.org/llambda/connect-session-knex.svg?branch=master)](https://travis-ci.org/llambda/connect-session-knex)
+
 connect-session-knex is a session store using [knex.js](http://knexjs.org/), which is a SQL query builder for Postgres, MySQL, MariaDB and SQLite3.
 
 ## Installation
