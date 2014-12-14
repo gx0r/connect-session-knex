@@ -1,29 +1,17 @@
-0.0.1 / 2014-07-09
+1.0.7 (2014-12-13)
 ==================
 
-  * Forked from connect-sqlite3
+* PostgreSQL bugfixes. Now building on Travis CI.
 
-
-0.0.2
+1.0.6 (2014-12-13)
 ==================
 
-  * Optimized PostgreSQL query
+* MySQL/Mariadb support
 
-
-1.0.0
+1.0.5 (2014-12-8)
 ==================
 
-  * Updated Readme and benchmarks.
-
-
-1.0.2
-==================
-  * Bugfixes
-
-
-1.0.3
-==================
-* Bugfixes
+* Optimized SQLite3 query
 
 
 1.0.4
@@ -31,14 +19,29 @@
 * Bugfixes
 
 
-1.0.5
+1.0.3
+==================
+* Bugfixes
+
+
+1.0.2
+==================
+* Bugfixes
+
+
+1.0.0
 ==================
 
-  * Optimized SQLite3 query
+* Updated Readme and benchmarks.
 
 
-1.0.6
+0.0.2
 ==================
 
-  * MySQL/Mariadb support
+* Optimized PostgreSQL query
 
+
+0.0.1 (2014-07-09)
+==================
+
+  * Forked from connect-sqlite3
