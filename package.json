@@ -19,13 +19,13 @@
   },
   "license": "ISC",
   "devDependencies": {
-    "connect": "^3.3.3",
-    "express-session": "^1.9.3",
+    "connect": "^3.3.4",
+    "express-session": "^1.10.2",
     "knex": "^0.7.3",
-    "mocha": "^2.0.1",
-    "mysql": "^2.5.3",
-    "pg": "^4.1.1",
-    "should": "^4.3.0",
-    "sqlite3": "^3.0.4"
+    "mocha": "^2.1.0",
+    "mysql": "^2.5.4",
+    "pg": "^4.2.0",
+    "should": "^5.0.0",
+    "sqlite3": "^3.0.5"
   }
 }
