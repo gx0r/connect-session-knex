@@ -1,3 +1,7 @@
+1.0.8 (2015-04-04)
+==================
+* Fix issues where fixes issues where mariaDB queries weren't being handled the same as mysql (Dan Weber)
+
 1.0.7 (2014-12-13)
 ==================
 
