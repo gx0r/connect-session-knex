@@ -1,3 +1,7 @@
+1.0.10 (2015-05-07)
+==================
+* Fix PostgreSQL not working (Daniel McKenzie)
+
 1.0.9 (2015-04-04)
 ==================
 * Fix issues where fixes issues where mariaDB queries weren't being handled the same as mysql (Dan Weber)
