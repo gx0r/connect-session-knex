@@ -5,7 +5,7 @@ Promise.longStackTraces();
 
 var test = require('tape');
 var session = require('express-session');
-var KnexStore = require('../lib/connect-session-knex.js')(session);
+var KnexStore = require('./index.js')(session);
 var knexPg = require('knex')({
 	client: 'pg',
 	connection: {
