@@ -11,3 +11,5 @@
 # npm modules
 node_modules
 
+*.sqlite
+npm-debug.log

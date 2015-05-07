@@ -15,17 +15,19 @@
   },
   "homepage": "https://github.com/llambda/connect-session-knex",
   "scripts": {
-    "test": "cd spec && ../node_modules/mocha/bin/mocha"
+    "test": "node test.js"
   },
   "license": "ISC",
   "devDependencies": {
+    "bluebird": "^2.9.25",
     "connect": "^3.3.4",
     "express-session": "^1.10.2",
-    "knex": "^0.7.3",
+    "knex": "^0.8.3",
     "mocha": "^2.1.0",
     "mysql": "^2.5.4",
     "pg": "^4.2.0",
     "should": "^5.0.0",
-    "sqlite3": "^3.0.5"
+    "sqlite3": "^3.0.7",
+    "tape": "^4.0.0"
   }
 }
