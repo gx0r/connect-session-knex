@@ -98,21 +98,20 @@ KnexStore.prototype.get = function(sid, fn) {
 			.select('sess')
 			.from(self.tablename)
 			.where('sid', '=', sid)
-			.andWhereRaw('CAST(? as ' + timestampTypeName(self.knex) + ') <= expired', nowAsISO())
+			.andWhereRaw('CAST(? as '+timestampTypeName(self.knex)+') <= expired', nowAsISO())
 			.then(function (response) {
-				if (fn) {
-					if (response[0]) {
-						var sess = response[0].sess;
-						if (typeof sess === "string") {
-							sess = JSON.parse(sess);
-						}
-						fn(null, sess);
-					} else {
-						fn();
+				var ret;
+				if (response[0]) {
+					ret = response[0].sess;
+					if (typeof ret === "string") {
+						ret = JSON.parse(ret);
 					}
 				}
+
+				if (fn) fn(null, ret);
+				return ret;
 			}).catch(function(err) {
-				fn(err);
+				if (fn) fn(err);
 				throw err;
 			});
 	});
@@ -163,6 +162,9 @@ KnexStore.prototype.set = function(sid, sess, fn) {
 				if (fn && result instanceof Array) {
 					fn(null, [1]);
 				}
+				if (result instanceof Array) {
+					return [1];
+				}
 			})
 			.catch(function (err) {
 				fn(err);
@@ -174,9 +176,8 @@ KnexStore.prototype.set = function(sid, sess, fn) {
 		return self.ready.then(function () {
 			return self.knex.raw(postgresfastq, [sid, new Date(expired).toISOString(), sess ])
 			.then(function (result) {
-				if (fn) {
-					fn(null, result);
-				}
+				if (fn) fn(null, result);
+				return result;
 			})
 			.catch(function (err) {
 				fn(err);
@@ -188,9 +189,8 @@ KnexStore.prototype.set = function(sid, sess, fn) {
 		return self.ready.then(function () {
 			return self.knex.raw(mysqlfastq, [sid, new Date(expired).toISOString(), sess ])
 			.then(function (result) {
-				if (fn) {
-					fn(null, result);
-				}
+				if (fn) fn(null, result);
+				return result;
 			})
 			.catch(function (err) {
 				fn(err);
@@ -200,7 +200,10 @@ KnexStore.prototype.set = function(sid, sess, fn) {
 	} else {
 		return self.ready.then(function () {
 			return self.knex.transaction(function (trx) {
-				return trx.select('*').forUpdate().from(self.tablename).where('sid', '=', sid)
+				return trx.select('*')
+				.forUpdate()
+				.from(self.tablename)
+				.where('sid', '=', sid)
 				.then(function (foundKeys) {
 					if (foundKeys.length === 0) {
 						return trx.from(self.tablename)
@@ -224,7 +227,7 @@ KnexStore.prototype.set = function(sid, sess, fn) {
 				return res;
 			})
 			.catch(function(err) {
-			if (fn) fn(err);
+				if (fn) fn(err);
 				throw err;
 			});
 		});
@@ -241,8 +244,11 @@ KnexStore.prototype.set = function(sid, sess, fn) {
 KnexStore.prototype.destroy = function(sid, fn) {
 	var self = this;
 	return self.ready.then(function () {
-		return self.knex.del().from(self.tablename).where('sid', '=', sid).then(function (res) {
-			if (fn) fn(null, true);
+		return self.knex.del()
+		.from(self.tablename)
+		.where('sid', '=', sid)
+		.then(function (res) {
+			if (fn) fn(null, res);
 			return res;
 		})
 		.catch(function(err) {
@@ -262,10 +268,12 @@ KnexStore.prototype.destroy = function(sid, fn) {
 KnexStore.prototype.length = function(fn) {
 	var self = this;
 	return self.ready.then(function () {
-		return self.knex.count('sid as count').from(self.tablename).then(function (response) {
-			if (fn) {
-				fn(null, response[0].count | 0);
-			}
+		return self.knex.count('sid as count')
+		.from(self.tablename)
+		.then(function (response) {
+			var ret = response[0].count | 0;
+			if (fn) fn(null, ret);
+			return ret;
 		})
 		.catch(function(err) {
 			fn(err);
@@ -284,10 +292,11 @@ KnexStore.prototype.length = function(fn) {
 KnexStore.prototype.clear = function(fn) {
 	var self = this;
 	return self.ready.then(function () {
-		return self.knex.del().from(self.tablename).then(function () {
-			if (fn) {
-				fn(null, true);
-			}
+		return self.knex.del()
+		.from(self.tablename)
+		.then(function (res) {
+			if (fn) fn(null, res);
+			return res;
 		})
 		.catch(function(err) {
 			fn(err);
