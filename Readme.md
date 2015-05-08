@@ -10,8 +10,6 @@
 
 [![NPM][npm-image]][npm-url]
 
-[![Build Status](https://travis-ci.org/llambda/connect-session-knex.svg?branch=master)](https://travis-ci.org/llambda/connect-session-knex)
-
 connect-session-knex is an [express-session](https://github.com/expressjs/session) store backed by Postgres, MySQL, MariaDB or SQLite3, via the [knex.js](http://knexjs.org/) library.
 
 ## Installation
