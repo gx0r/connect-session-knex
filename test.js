@@ -33,16 +33,52 @@ stores.push(new KnexStore({ knex: knexMysql }))
 
 stores.forEach(function (store) {
 
-	test('clear', function (t) {
-		t.plan(4);
+	test('initial clear', function (t) {
+		t.plan(3);
 		store.clear(function(err, success) {
 			t.error(err);
-			t.ok(success);
 
 			store.length(function(err, len) {
-				t.notOk(err, 'no error after clear');
-				t.equal(len, 0, 'length');
+				t.error(err, 'no error after clear');
+				t.equal(len, 0, 'empty after clear');
 			});
+		})
+	})
+
+	test('set then clear', function (t) {
+		t.plan(4);
+
+		store.set('1092348234', {cookie: {maxAge: 1000}, name: 'InsertThenClear'})
+		.then(function () {
+			store.clear(function(err, cleared) {
+				t.error(err);
+				t.equal(1, cleared, 'cleared 1');
+
+				store.length(function(err, len) {
+					t.error(err, 'no error after clear');
+					t.equal(len, 0, 'empty after clear');
+				});
+			})
+		})
+	})
+
+	test('double clear', function (t) {
+		t.plan(4);
+
+		store.clear()
+		.then(function () {
+			return store.clear()
+		})
+		.then(function () {
+			store.clear(function(err, cleared) {
+				t.error(err);
+				t.equal(0, cleared, 'cleared 0');
+
+				store.length(function(err, len) {
+					t.notOk(err, 'no error after clear');
+					t.equal(len, 0, 'length');
+				});
+			})
 		})
 	})
 
@@ -59,7 +95,7 @@ stores.forEach(function (store) {
 				t.error(err);
 
 				store.length(function(err, len) {
-					t.notOk(err, 'error');
+					t.error(err, 'error');
 					t.equal(len, 0);
 				});
 			});
