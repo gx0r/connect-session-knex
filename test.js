@@ -142,18 +142,9 @@ stores.forEach(function (store) {
 	})
 
 	test('cleanup', function (t) {
-		store.knex.destroy();
-		t.end();
-		oneDbDone();
+		store.knex.destroy().then(t.end);
 	})	
 })
 
-var done = 0;
-function oneDbDone() {
-	done++;
-	if (done == stores.length) {
-		process.exit();
-	}
-}
 
 
