@@ -1,3 +1,7 @@
+1.0.11 (2015-05-07)
+==================
+* Fix issue with SQLite. Many code cleanups. Tests refactored and ported to tape. Devdependencies removed. 
+
 1.0.10 (2015-05-07)
 ==================
 * Fix PostgreSQL not working (Daniel McKenzie)
