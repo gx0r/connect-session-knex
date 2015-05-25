@@ -1,3 +1,7 @@
+1.0.12 (2015-05-25)
+==================
+*  Don't use postgres fast query for version < 9.2 because the json type is not supported. (Matthew Gordon)
+
 1.0.11 (2015-05-07)
 ==================
 * Fix issue with SQLite. Many code cleanups. Tests refactored and ported to tape. Devdependencies removed. 
