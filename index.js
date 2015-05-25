@@ -171,7 +171,7 @@ KnexStore.prototype.set = function(sid, sess, fn) {
 				throw err;
 			});
 		});
-	} else if (self.knex.client.dialect === 'postgresql') {
+	} else if (self.knex.client.dialect === 'postgresql' && parseFloat(self.knex.client.version) >= 9.2) {
 		// postgresql optimized query
 		return self.ready.then(function () {
 			return self.knex.raw(postgresfastq, [sid, new Date(expired).toISOString(), sess ])
