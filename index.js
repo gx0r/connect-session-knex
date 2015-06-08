@@ -25,7 +25,7 @@ function nowAsISO() {
  * @api private
  */
 function timestampTypeName(knex) {
-	return (['mysql', 'mariasql'].indexOf(knex.client.dialect) > -1) ? 'DATETIME' : 'timestamp';
+	return (['mysql', 'mariasql', 'mariadb'].indexOf(knex.client.dialect) > -1) ? 'DATETIME' : 'timestamp';
 }
 
 /*
