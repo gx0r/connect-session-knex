@@ -1,3 +1,7 @@
+1.0.13 (2015-06-08)
+==================
+*  The dialect for MariaSQL is 'mariadb'. This was causing an error with the expired time. (Michael Pauley)
+
 1.0.12 (2015-05-25)
 ==================
 *  Don't use postgres fast query for version < 9.2 because the json type is not supported. (Matthew Gordon)
