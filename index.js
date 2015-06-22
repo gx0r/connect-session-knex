@@ -187,7 +187,7 @@ KnexStore.prototype.set = function(sid, sess, fn) {
 	} else if (['mysql', 'mariasql'].indexOf(self.knex.client.dialect) > -1) {
 		// mysql/mariaDB optimized query
 		return self.ready.then(function () {
-			return self.knex.raw(mysqlfastq, [sid, new Date(expired).toISOString(), sess ])
+			return self.knex.raw(mysqlfastq, [sid, new Date(expired).toISOString().slice(0, 19).replace('T', ' '), sess ])
 			.then(function (result) {
 				if (fn) fn(null, result);
 				return result;
