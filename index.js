@@ -133,7 +133,7 @@ KnexStore.prototype.set = function(sid, sess, fn) {
 	var expired = maxAge ? now + maxAge : now + oneDay;
 	sess = JSON.stringify(sess);
 	var postgresfastq = 'with new_values (sid, expired, sess) as (' +
-					'  values (?, ?::timestamp without time zone, ?::json)' +
+					'  values (?, ?::timestamp with time zone, ?::json)' +
 					'), ' +
 					'upsert as ' +
 					'( ' +
