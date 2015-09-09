@@ -52,6 +52,11 @@ function KnexStore(options) {
 	options = options || {};
 	Store.call(self, options);
 
+	if (!options.clearInterval) {
+		// Time to run clear expired function.
+		options.clearInterval =  60000;
+	}
+
 	self.tablename = options.tablename || 'sessions';
 	self.knex = options.knex || require('knex')({
 		client: 'sqlite3',
@@ -77,7 +82,7 @@ function KnexStore(options) {
 	})
 	.then(function () {
 		dbCleanup(self);
-		setInterval(dbCleanup, oneDay, self).unref();
+		self._clearer = setInterval(dbCleanup, options.clearInterval, self).unref();
 	});
 }
 
@@ -107,13 +112,9 @@ KnexStore.prototype.get = function(sid, fn) {
 						ret = JSON.parse(ret);
 					}
 				}
-
-				if (fn) fn(null, ret);
 				return ret;
-			}).catch(function(err) {
-				if (fn) fn(err);
-				throw err;
-			});
+			})
+			.asCallback(fn)
 	});
 };
 
@@ -159,43 +160,21 @@ KnexStore.prototype.set = function(sid, sess, fn) {
 		return self.ready.then(function () {
 			return self.knex.raw(sqlitefastq, [sid, new Date(expired).toISOString(), sess ])
 			.then(function (result) {
-				if (fn && result instanceof Array) {
-					fn(null, [1]);
-				}
-				if (result instanceof Array) {
-					return [1];
-				}
+				return [1];
 			})
-			.catch(function (err) {
-				fn(err);
-				throw err;
-			});
+			.asCallback(fn);
 		});
 	} else if (self.knex.client.dialect === 'postgresql' && parseFloat(self.knex.client.version) >= 9.2) {
 		// postgresql optimized query
 		return self.ready.then(function () {
 			return self.knex.raw(postgresfastq, [sid, new Date(expired).toISOString(), sess ])
-			.then(function (result) {
-				if (fn) fn(null, result);
-				return result;
-			})
-			.catch(function (err) {
-				fn(err);
-				throw err;
-			});
+			.asCallback(fn);
 		});
 	} else if (['mysql', 'mariasql'].indexOf(self.knex.client.dialect) > -1) {
 		// mysql/mariaDB optimized query
 		return self.ready.then(function () {
 			return self.knex.raw(mysqlfastq, [sid, new Date(expired).toISOString().slice(0, 19).replace('T', ' '), sess ])
-			.then(function (result) {
-				if (fn) fn(null, result);
-				return result;
-			})
-			.catch(function (err) {
-				fn(err);
-				throw err;
-			});
+			.asCallback(fn);
 		});
 	} else {
 		return self.ready.then(function () {
@@ -222,14 +201,7 @@ KnexStore.prototype.set = function(sid, sess, fn) {
 					}
 				});
 			})
-			.then(function (res) {
-				if (fn) fn(null, res);
-				return res;
-			})
-			.catch(function(err) {
-				if (fn) fn(err);
-				throw err;
-			});
+			.asCallback(fn)
 		});
 	}
 };
@@ -247,14 +219,7 @@ KnexStore.prototype.destroy = function(sid, fn) {
 		return self.knex.del()
 		.from(self.tablename)
 		.where('sid', '=', sid)
-		.then(function (res) {
-			if (fn) fn(null, res);
-			return res;
-		})
-		.catch(function(err) {
-			if (fn) fn(err);
-			throw err;
-		});
+		.asCallback(fn)
 	});
 };
 
@@ -271,15 +236,10 @@ KnexStore.prototype.length = function(fn) {
 		return self.knex.count('sid as count')
 		.from(self.tablename)
 		.then(function (response) {
-			var ret = response[0].count | 0;
-			if (fn) fn(null, ret);
-			return ret;
+			return response[0].count | 0;
 		})
-		.catch(function(err) {
-			fn(err);
-			throw err;
-		});
-	});
+		.asCallback(fn)
+	})
 };
 
 
@@ -294,14 +254,7 @@ KnexStore.prototype.clear = function(fn) {
 	return self.ready.then(function () {
 		return self.knex.del()
 		.from(self.tablename)
-		.then(function (res) {
-			if (fn) fn(null, res);
-			return res;
-		})
-		.catch(function(err) {
-			fn(err);
-			throw err;
-		});
+		.asCallback(fn)
 	});
 };
 
