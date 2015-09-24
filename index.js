@@ -25,7 +25,8 @@ module.exports = function(connect) {
 	* @api private
 	*/
 	function timestampTypeName(knex) {
-		return (['mysql', 'mariasql', 'mariadb'].indexOf(knex.client.dialect) > -1) ? 'DATETIME' : 'timestamp';
+		return (['mysql', 'mariasql', 'mariadb'].indexOf(knex.client.dialect) > -1) ? 'DATETIME' :
+      knex.client.dialect === 'postgresql' ? 'timestamp with time zone' : 'timestamp';
 	}
 
 	/*
