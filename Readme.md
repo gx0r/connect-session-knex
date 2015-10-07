@@ -30,6 +30,13 @@ $ npm install connect-session-knex
 
  - `tablename='sessions'` Tablename to use. Defaults to 'sessions'.
  - `knex` knex instance to use. Defaults to a new knex instance, using sqlite3 with a file named 'connect-session-knex.sqlite'
+ - `clearInterval` milliseconds between clearing expired sessions. Defaults to 60000.
+
+If the table does not exist in the schema, this module will attempt to create it.
+
+If a knex instance is not provided, this module will attempt to create a sqlite3 databased with a file named 'connect-session-knex.sqlite' in the working directory of the process.
+
+This module does not create any indexes. You should create an index on the 'expired' column to make the session clearing efficient.
 
 ## Benchmarks
 
