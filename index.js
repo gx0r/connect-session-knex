@@ -30,14 +30,26 @@ module.exports = function(connect) {
 	}
 
 	/*
+	* Returns true if the specified knex instance is using sqlite3.
+	* @return {bool}
+	* @api private
+	*/
+	function isSqlite3(knex) {
+		return knex.client.dialect === 'sqlite3';
+	}
+
+	/*
 	* Remove expired sessions from database.
 	* @param {Object} store
 	* @api private
 	*/
 	function dbCleanup(store) {
 		return store.ready.then(function () {
+			// sqlite3 date condition is a special case.
+			var condition = isSqlite3(store.knex) ? 'datetime(expired) < datetime(?)' :
+				'expired < CAST(? as ' + timestampTypeName(store.knex) + ')';
 			return store.knex(store.tablename).del()
-			.whereRaw('expired < CAST(? as ' + timestampTypeName(store.knex) + ')', nowAsISO());
+			.whereRaw(condition, nowAsISO());
 		});
 	}
 
@@ -100,11 +112,14 @@ module.exports = function(connect) {
 	KnexStore.prototype.get = function(sid, fn) {
 		var self = this;
 		return self.ready.then(function () {
+			// sqlite3 date condition is a special case.
+			var condition = isSqlite3(self.knex) ? 'datetime(?) <= datetime(expired)' :
+				'CAST(? as '+timestampTypeName(self.knex)+') <= expired';
 			return self.knex
 			.select('sess')
 			.from(self.tablename)
 			.where('sid', '=', sid)
-			.andWhereRaw('CAST(? as '+timestampTypeName(self.knex)+') <= expired', nowAsISO())
+			.andWhereRaw(condition, nowAsISO())
 			.then(function (response) {
 				var ret;
 				if (response[0]) {
