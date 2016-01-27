@@ -6,6 +6,9 @@
 	"engines": {
 		"node": ">=0.10.x"
 	},
+	"files": [
+		"index.js"
+	],
 	"repository": {
 		"type": "git",
 		"url": "git@github.com:llambda/connect-session-knex.git"
