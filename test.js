@@ -141,9 +141,28 @@ stores.forEach(function (store) {
 		});
 	})
 
+	test('touch', function (t) {
+		t.plan(3);
+
+		store.clear()
+		.then(function() {
+			return store.set('11112222333344445555', {cookie: {maxAge: 20000}, name: 'sample name'});
+		})
+		.then(function() {
+			store.touch('11112222333344445555', {cookie: {maxAge: 20000, expires: new Date()}, name: 'sample name'}, function(err) {
+				t.error(err);
+
+				store.length(function(err, len) {
+					t.error(err, 'error');
+					t.equal(len, 1);
+				});
+			});
+		});
+	})
+
 	test('cleanup', function (t) {
 		store.knex.destroy().then(t.end);
-	})	
+	})
 })
 
 
