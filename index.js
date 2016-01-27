@@ -30,6 +30,16 @@ module.exports = function(connect) {
 	}
 
 	/*
+	 * Return condition for filtering by expiration
+	 * @return {String} expired sql condition string
+	 * @api private
+	 */
+	function expiredCondition(knex) {
+		return isSqlite3(knex) ? 'datetime(?) <= datetime(expired)' :
+			'CAST(? as '+timestampTypeName(knex)+') <= expired';
+	}
+
+	/*
 	* Returns true if the specified knex instance is using sqlite3.
 	* @return {bool}
 	* @api private
@@ -112,9 +122,7 @@ module.exports = function(connect) {
 	KnexStore.prototype.get = function(sid, fn) {
 		var self = this;
 		return self.ready.then(function () {
-			// sqlite3 date condition is a special case.
-			var condition = isSqlite3(self.knex) ? 'datetime(?) <= datetime(expired)' :
-				'CAST(? as '+timestampTypeName(self.knex)+') <= expired';
+			var condition = expiredCondition(self.knex);
 			return self.knex
 			.select('sess')
 			.from(self.tablename)
@@ -220,6 +228,31 @@ module.exports = function(connect) {
 				.asCallback(fn)
 			});
 		}
+	};
+
+
+	/**
+	 * Touch the given session object associated with the given session ID.
+	 *
+	 * @param {String} sid
+	 * @param {Session} sess
+	 * @param {Function} fn
+	 * @public
+	 */
+	KnexStore.prototype.touch = function(sid, sess, fn) {
+		if (sess && sess.cookie && sess.cookie.expires) {
+			var condition = expiredCondition(this.knex);
+
+			return this.knex(this.tablename)
+				.where('sid', '=', sid)
+				.andWhereRaw(condition, nowAsISO())
+				.update({
+					expired: new Date(sess.cookie.expires).toISOString()
+				})
+				.asCallback(fn);
+		}
+
+		fn();
 	};
 
 
