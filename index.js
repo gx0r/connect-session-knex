@@ -98,7 +98,7 @@ module.exports = function(connect) {
 					if (['mysql', 'mariasql'].indexOf(self.knex.client.dialect) > -1) {
 						table.dateTime('expired').notNullable();
 					} else {
-						table.timestamp('expired', 'true').notNullable();
+						table.timestamp('expired').notNullable();
 					}
 				});
 			}
