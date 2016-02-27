@@ -11,12 +11,17 @@ module.exports = function(connect) {
 	var Store = (connect.session) ? connect.session.Store : connect.Store;
 
 	/*
-	* Return an ISO compliant string of the current time
+	* Return datastore appropriate string of the current time
 	* @api private
-	* @return {String} an ISO compliant string of the current time
+	* @return {String} 
 	*/
-	function dateAsISO(knex, date) {
-		var date = new Date(date || null);
+	function dateAsISO(knex, aDate) {
+		var date;
+		if (aDate != null) {
+			date = new Date(aDate);
+		} else {
+			date = new Date();
+		}
 
 		return isMySQL(knex) ? date.toISOString().slice(0, 19).replace('T', ' ') : date.toISOString();
 	}
