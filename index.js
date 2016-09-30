@@ -95,6 +95,7 @@ module.exports = function(connect) {
 			options.clearInterval =  60000;
 		}
 
+		self.createtable = options.hasOwnProperty('createtable') ? options.createtable :  true;
 		self.tablename = options.tablename || 'sessions';
 		self.knex = options.knex || require('knex')({
 			client: 'sqlite3',
@@ -106,7 +107,7 @@ module.exports = function(connect) {
 
 		self.ready = self.knex.schema.hasTable(self.tablename)
 		.then(function (exists) {
-			if (!exists) {
+			if (!exists && self.createtable) {
 				return self.knex.schema.createTable(self.tablename, function (table) {
 					table.string('sid').primary();
 					table.json('sess').notNullable();
