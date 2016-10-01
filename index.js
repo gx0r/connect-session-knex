@@ -120,9 +120,11 @@ module.exports = function(connect) {
 			}
 			return exists;
 		})
-		.then(function () {
-			dbCleanup(self);
-			self._clearer = setInterval(dbCleanup, options.clearInterval, self).unref();
+		.then(function (exists) {
+			if (exists) {
+				dbCleanup(self);
+				self._clearer = setInterval(dbCleanup, options.clearInterval, self).unref();
+			}
 			return null;
 		});
 	}
