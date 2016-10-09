@@ -97,6 +97,7 @@ module.exports = function(connect) {
 
 		self.createtable = options.hasOwnProperty('createtable') ? options.createtable :  true;
 		self.tablename = options.tablename || 'sessions';
+		self.sidfieldname = options.sidfieldname || 'sid';
 		self.knex = options.knex || require('knex')({
 			client: 'sqlite3',
 			// debug: true,
@@ -109,7 +110,7 @@ module.exports = function(connect) {
 		.then(function (exists) {
 			if (!exists && self.createtable) {
 				return self.knex.schema.createTable(self.tablename, function (table) {
-					table.string('sid').primary();
+					table.string(self.sidfieldname).primary();
 					table.json('sess').notNullable();
 					if (['mysql', 'mariasql'].indexOf(self.knex.client.dialect) > -1) {
 						table.dateTime('expired').notNullable();
@@ -146,7 +147,7 @@ module.exports = function(connect) {
 			return self.knex
 			.select('sess')
 			.from(self.tablename)
-			.where('sid', '=', sid)
+			.where(self.sidfieldname, '=', sid)
 			.andWhereRaw(condition, dateAsISO(self.knex))
 			.then(function (response) {
 				var ret;
@@ -177,27 +178,27 @@ module.exports = function(connect) {
 		var now = new Date().getTime();
 		var expired = maxAge ? now + maxAge : now + oneDay;
 		sess = JSON.stringify(sess);
-		var postgresfastq = 'with new_values (sid, expired, sess) as (' +
+		var postgresfastq = 'with new_values (' + self.sidfieldname + ', expired, sess) as (' +
 		'  values (?, ?::timestamp with time zone, ?::json)' +
 		'), ' +
 		'upsert as ' +
 		'( ' +
 		'  update ' + self.tablename + ' cs set ' +
-		'    sid = nv.sid, ' +
+		'    ' + self.sidfieldname + ' = nv.' + self.sidfieldname + ', ' +
 		'    expired = nv.expired, ' +
 		'    sess = nv.sess ' +
 		'  from new_values nv ' +
-		'  where cs.sid = nv.sid ' +
+		'  where cs.' + self.sidfieldname + ' = nv.' + self.sidfieldname + ' ' +
 		'  returning cs.* ' +
 		')' +
-		'insert into ' + self.tablename + ' (sid, expired, sess) ' +
-		'select sid, expired, sess ' +
+		'insert into ' + self.tablename + ' (' + self.sidfieldname + ', expired, sess) ' +
+		'select ' + self.sidfieldname + ', expired, sess ' +
 		'from new_values ' +
-		'where not exists (select 1 from upsert up where up.sid = new_values.sid)';
+		'where not exists (select 1 from upsert up where up.' + self.sidfieldname + ' = new_values.' + self.sidfieldname + ')';
 
-		var sqlitefastq = 'insert or replace into ' + self.tablename + ' (sid, expired, sess) values (?, ?, ?);';
+		var sqlitefastq = 'insert or replace into ' + self.tablename + ' (' + self.sidfieldname + ', expired, sess) values (?, ?, ?);';
 
-		var mysqlfastq = 'insert into ' + self.tablename + ' (sid, expired, sess) values (?, ?, ?) on duplicate key update expired=values(expired), sess=values(sess);';
+		var mysqlfastq = 'insert into ' + self.tablename + ' (' + self.sidfieldname + ', expired, sess) values (?, ?, ?) on duplicate key update expired=values(expired), sess=values(sess);';
 
 		var dbDate = dateAsISO(self.knex, expired);
 
@@ -228,18 +229,18 @@ module.exports = function(connect) {
 					return trx.select('*')
 					.forUpdate()
 					.from(self.tablename)
-					.where('sid', '=', sid)
+					.where(self.sidfieldname, '=', sid)
 					.then(function (foundKeys) {
 						if (foundKeys.length === 0) {
 							return trx.from(self.tablename)
 							.insert({
-								sid: sid,
+								[self.sidfieldname]: sid,
 								expired: dbDate,
 								sess: sess
 							});
 						} else {
 							return trx(self.tablename)
-							.where('sid', '=', sid)
+							.where(self.sidfieldname, '=', sid)
 							.update({
 								expired: dbDate,
 								sess: sess
@@ -266,7 +267,7 @@ module.exports = function(connect) {
 			var condition = expiredCondition(this.knex);
 
 			return this.knex(this.tablename)
-				.where('sid', '=', sid)
+				.where(this.sidfieldname, '=', sid)
 				.andWhereRaw(condition, dateAsISO(this.knex))
 				.update({
 					expired: dateAsISO(this.knex, sess.cookie.expires)
@@ -289,7 +290,7 @@ module.exports = function(connect) {
 		return self.ready.then(function () {
 			return self.knex.del()
 			.from(self.tablename)
-			.where('sid', '=', sid)
+			.where(self.sidfieldname, '=', sid)
 			.asCallback(fn)
 		});
 	};
@@ -304,7 +305,7 @@ module.exports = function(connect) {
 	KnexStore.prototype.length = function(fn) {
 		var self = this;
 		return self.ready.then(function () {
-			return self.knex.count('sid as count')
+			return self.knex.count(self.sidfieldname + ' as count')
 			.from(self.tablename)
 			.then(function (response) {
 				return response[0].count | 0;

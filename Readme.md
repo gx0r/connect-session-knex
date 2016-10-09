@@ -29,6 +29,7 @@ $ npm install connect-session-knex
 ## Options
 
  - `tablename='sessions'` Tablename to use. Defaults to 'sessions'.
+ - `sidfieldname='sid'` Field name in table to use for storing session ids. Defaults to 'sid'.
  - `knex` knex instance to use. Defaults to a new knex instance, using sqlite3 with a file named 'connect-session-knex.sqlite'
  - `createtable` if the table for sessions should be created automatically or not.
  - `clearInterval` milliseconds between clearing expired sessions. Defaults to 60000.
