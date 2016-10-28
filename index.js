@@ -13,7 +13,7 @@ module.exports = function(connect) {
 	/*
 	* Return datastore appropriate string of the current time
 	* @api private
-	* @return {String} 
+	* @return {String | date}
 	*/
 	function dateAsISO(knex, aDate) {
 		var date;
@@ -22,7 +22,9 @@ module.exports = function(connect) {
 		} else {
 			date = new Date();
 		}
-
+		if(isOracle(knex)){
+			return date;
+		}
 		return isMySQL(knex) ? date.toISOString().slice(0, 19).replace('T', ' ') : date.toISOString();
 	}
 
@@ -41,8 +43,13 @@ module.exports = function(connect) {
 	 * @api private
 	 */
 	function expiredCondition(knex) {
-		return isSqlite3(knex) ? 'datetime(?) <= datetime(expired)' :
-			'CAST(? as '+timestampTypeName(knex)+') <= expired';
+		var condition ='CAST(? as '+timestampTypeName(knex)+') <= expired';
+		if(isSqlite3(knex)) { 	// sqlite3 date condition is a special case.
+			condition = 'datetime(?) <= datetime(expired)';
+		} else if (isOracle(knex)) {
+			condition = 'CAST(? as '+timestampTypeName(knex)+') <= "expired"';
+		}
+		return condition;
 	}
 
 	/*
@@ -64,15 +71,27 @@ module.exports = function(connect) {
 	}
 
 	/*
+	* Returns true if the specified knex instance is using oracle.
+	* @return {bool}
+	* @api private
+	*/
+	function isOracle(knex) {
+		return ['oracle', 'oracledb'].indexOf(knex.client.dialect) > -1;
+	}
+
+	/*
 	* Remove expired sessions from database.
 	* @param {Object} store
 	* @api private
 	*/
 	function dbCleanup(store) {
 		return store.ready.then(function () {
-			// sqlite3 date condition is a special case.
-			var condition = isSqlite3(store.knex) ? 'datetime(expired) < datetime(?)' :
-				'expired < CAST(? as ' + timestampTypeName(store.knex) + ')';
+			var condition = 'expired < CAST(? as ' + timestampTypeName(store.knex) + ')';
+			if(isSqlite3(store.knex)) { 	// sqlite3 date condition is a special case.
+				condition= 'datetime(expired) < datetime(?)';
+			} else if (isOracle(store.knex)) {
+				'"expired" < CAST(? as ' + timestampTypeName(store.knex) + ')';
+			}
 			return store.knex(store.tablename).del()
 			.whereRaw(condition, dateAsISO(store.knex));
 		});
