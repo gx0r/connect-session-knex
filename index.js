@@ -88,9 +88,9 @@ module.exports = function(connect) {
 		return store.ready.then(function () {
 			var condition = 'expired < CAST(? as ' + timestampTypeName(store.knex) + ')';
 			if(isSqlite3(store.knex)) { 	// sqlite3 date condition is a special case.
-				condition= 'datetime(expired) < datetime(?)';
+				condition = 'datetime(expired) < datetime(?)';
 			} else if (isOracle(store.knex)) {
-				'"expired" < CAST(? as ' + timestampTypeName(store.knex) + ')';
+				condition = '"expired" < CAST(? as ' + timestampTypeName(store.knex) + ')';
 			}
 			return store.knex(store.tablename).del()
 			.whereRaw(condition, dateAsISO(store.knex));
