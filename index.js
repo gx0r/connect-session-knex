@@ -95,7 +95,7 @@ module.exports = function(connect) {
 			}
 			return store.knex(store.tablename).del()
 			.whereRaw(condition, dateAsISO(store.knex));
-		}).then(function() {
+		}).finally(function() {
 			setTimeout(dbCleanup, interval, store, interval).unref()
 		});
 	}
