@@ -82,9 +82,10 @@ module.exports = function(connect) {
 	/*
 	* Remove expired sessions from database.
 	* @param {Object} store
+	* @param {number} interval
 	* @api private
 	*/
-	function dbCleanup(store) {
+	function dbCleanup(store, interval) {
 		return store.ready.then(function () {
 			var condition = 'expired < CAST(? as ' + timestampTypeName(store.knex) + ')';
 			if(isSqlite3(store.knex)) { 	// sqlite3 date condition is a special case.
@@ -94,6 +95,8 @@ module.exports = function(connect) {
 			}
 			return store.knex(store.tablename).del()
 			.whereRaw(condition, dateAsISO(store.knex));
+		}).finally(function() {
+			setTimeout(dbCleanup, interval, store, interval).unref()
 		});
 	}
 
@@ -142,8 +145,7 @@ module.exports = function(connect) {
 		})
 		.then(function (exists) {
 			if (exists) {
-				dbCleanup(self);
-				self._clearer = setInterval(dbCleanup, options.clearInterval, self).unref();
+				dbCleanup(self, options.clearInterval);
 			}
 			return null;
 		});
