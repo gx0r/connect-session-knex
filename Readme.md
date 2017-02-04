@@ -38,8 +38,6 @@ If the table does not exist in the schema, this module will attempt to create it
 
 If a knex instance is not provided, this module will attempt to create a sqlite3 database, with a file named 'connect-session-knex.sqlite', in the working directory of the process.
 
-This module does not create any indexes. You should create an index on the 'expired' column to make the session clearing efficient.
-
 ## Schema
 
 ### PostgreSQL or SQLite
@@ -50,8 +48,10 @@ This module does not create any indexes. You should create an index on the 'expi
 | sid     | character varying(255)   | not null  | extended |
 | sess    | json                     | not null  | extended |
 | expired | timestamp with time zone | not null  | plain    |  
-`Indexes:
-    "sessions_pkey" PRIMARY KEY, btree (sid)`
+Indexes:  
+    "sessions_pkey" PRIMARY KEY, btree (sid)  
+    "sessions_expired_index" btree (expired)
+
 
 ## Benchmarks
 

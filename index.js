@@ -135,9 +135,9 @@ module.exports = function(connect) {
 					table.string(self.sidfieldname).primary();
 					table.json('sess').notNullable();
 					if (['mysql', 'mariasql'].indexOf(self.knex.client.dialect) > -1) {
-						table.dateTime('expired').notNullable();
+						table.dateTime('expired').notNullable().index();
 					} else {
-						table.timestamp('expired').notNullable();
+						table.timestamp('expired').notNullable().index();
 					}
 				});
 			}
