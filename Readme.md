@@ -40,6 +40,19 @@ If a knex instance is not provided, this module will attempt to create a sqlite3
 
 This module does not create any indexes. You should create an index on the 'expired' column to make the session clearing efficient.
 
+## Schema
+
+### PostgreSQL or SQLite
+
+#### Table Name "sessions"  
+| Column  |           Type           | Modifiers | Storage  | 
+|---------|:------------------------:|:---------:|:--------:|
+| sid     | character varying(255)   | not null  | extended |
+| sess    | json                     | not null  | extended |
+| expired | timestamp with time zone | not null  | plain    |  
+`Indexes:
+    "sessions_pkey" PRIMARY KEY, btree (sid)`
+
 ## Benchmarks
 
 [https://github.com/llambda/express-session-benchmarks](https://github.com/llambda/express-session-benchmarks)
