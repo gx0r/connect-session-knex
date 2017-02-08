@@ -1,7 +1,7 @@
 {
   "name": "connect-session-knex",
   "description": "A knex.js session store for Express and Connect",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "main": "index.js",
   "engines": {
     "node": ">=6.9.3"
