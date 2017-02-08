@@ -4,7 +4,7 @@
   "version": "1.3.3",
   "main": "index.js",
   "engines": {
-    "node": ">=6.9.3"
+    "node": ">=4.3.2"
   },
   "files": [
     "index.js"
