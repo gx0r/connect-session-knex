@@ -48,10 +48,12 @@ If a knex instance is not provided, this module will attempt to create a sqlite3
 | sid     | character varying(255)   | not null  | extended |
 | sess    | json                     | not null  | extended |
 | expired | timestamp with time zone | not null  | plain    |  
-Indexes:  
+
+### Indexes:
+```  
     "sessions_pkey" PRIMARY KEY, btree (sid)  
     "sessions_expired_index" btree (expired)
-
+```
 
 ## Benchmarks
 
