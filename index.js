@@ -34,7 +34,7 @@ module.exports = function(connect) {
 	* @api private
 	*/
 	function timestampTypeName(knex) {
-		return isMySQL(knex) || isMSSQL(knex) ? 'DATETIME' : knex.client.dialect === 'postgresql' ? 'timestamp with time zone' : 'timestamp';
+		return isMySQL(knex) || isMSSQL(knex) ? 'DATETIME' : isPostgres(knex) ? 'timestamp with time zone' : 'timestamp';
 	}
 
 	/*
@@ -62,7 +62,7 @@ module.exports = function(connect) {
 	}
 
 	/*
-	* Returns true if the specified knex instance is using sqlite3.
+	* Returns true if the specified knex instance is using mysql.
 	* @return {bool}
 	* @api private
 	*/
@@ -77,6 +77,15 @@ module.exports = function(connect) {
 	*/
 	function isMSSQL(knex) {
 		return ['mssql'].indexOf(knex.client.dialect) > -1;
+	}
+
+	/*
+	* Returns true if the specified knex instance is using postgresql.
+	* @return {bool}
+	* @api private
+	*/
+	function isPostgres(knex) {
+		return ['postgresql'].indexOf(knex.client.dialect) > -1;
 	}
 
 	/*
@@ -147,7 +156,7 @@ module.exports = function(connect) {
 					} else {
 						table.json('sess').notNullable();
 					}
-					if ((['mysql', 'mariasql'].indexOf(self.knex.client.dialect) > -1) || isMSSQL(self.knex)) {
+					if (isMySQL(self.knex) || isMSSQL(self.knex)) {
 						table.dateTime('expired').notNullable().index();
 					} else {
 						table.timestamp('expired').notNullable().index();
@@ -245,7 +254,7 @@ module.exports = function(connect) {
 
 		var dbDate = dateAsISO(self.knex, expired);
 
-		if (self.knex.client.dialect === 'sqlite3') {
+		if (isSqlite3(self.knex)) {
 			// sqlite optimized query
 			return self.ready.then(function () {
 				return self.knex.raw(sqlitefastq, [sid, dbDate, sess ])
@@ -254,13 +263,13 @@ module.exports = function(connect) {
 				})
 				.asCallback(fn);
 			});
-		} else if (self.knex.client.dialect === 'postgresql' && parseFloat(self.knex.client.version) >= 9.2) {
+		} else if (isPostgres(self.knex) && parseFloat(self.knex.client.version) >= 9.2) {
 			// postgresql optimized query
 			return self.ready.then(function () {
 				return self.knex.raw(postgresfastq, [sid, dbDate, sess ])
 				.asCallback(fn);
 			});
-		} else if (['mysql', 'mariasql'].indexOf(self.knex.client.dialect) > -1) {
+		} else if (isMySQL(self.knex)) {
 			// mysql/mariaDB optimized query
 			return self.ready.then(function () {
 				return self.knex.raw(mysqlfastq, [sid, dbDate, sess ])
