@@ -98,6 +98,65 @@ module.exports = function(connect) {
 	}
 
 	/*
+	* Returns PostgreSQL fast upsert query.
+	* @return {string}
+	* @api private
+	*/
+	function getPostgresFastQuery(tablename, sidfieldname) {
+		return 'with new_values (' + sidfieldname + ', expired, sess) as (' +
+			'  values (?, ?::timestamp with time zone, ?::json)' +
+			'), ' +
+			'upsert as ' +
+			'( ' +
+			'  update ' + tablename + ' cs set ' +
+			'    ' + sidfieldname + ' = nv.' + sidfieldname + ', ' +
+			'    expired = nv.expired, ' +
+			'    sess = nv.sess ' +
+			'  from new_values nv ' +
+			'  where cs.' + sidfieldname + ' = nv.' + sidfieldname + ' ' +
+			'  returning cs.* ' +
+			')' +
+			'insert into ' + tablename + ' (' + sidfieldname + ', expired, sess) ' +
+			'select ' + sidfieldname + ', expired, sess ' +
+			'from new_values ' +
+			'where not exists (select 1 from upsert up where up.' + sidfieldname + ' = new_values.' + sidfieldname + ')';
+	}
+
+	/*
+	* Returns SQLite fast upsert query.
+	* @return {string}
+	* @api private
+	*/
+	function getSqliteFastQuery(tablename, sidfieldname) {
+		return 'insert or replace into ' + tablename + ' (' + sidfieldname + ', expired, sess) values (?, ?, ?);';
+	}
+
+	/*
+	* Returns MySQL fast upsert query.
+	* @return {string}
+	* @api private
+	*/
+	function getMysqlFastQuery(tablename, sidfieldname) {
+		return 'insert into ' + tablename + ' (' + sidfieldname + ', expired, sess) values (?, ?, ?) on duplicate key update expired=values(expired), sess=values(sess);';
+	}
+
+	/*
+	* Returns MSSQL fast upsert query.
+	* @return {string}
+	* @api private
+	*/
+	function getMssqlFastQuery(tablename, sidfieldname) {
+		return 'merge ' + tablename + ' as T ' +
+			'using (values (?, ?, ?)) as S (' + sidfieldname + ', expired, sess) ' +
+			'on (T.' + sidfieldname + ' = S.' + sidfieldname + ') ' +
+			'when matched then ' +
+			'update set expired = S.expired, sess = S.sess ' +
+			'when not matched by target then ' +
+			'insert (' + sidfieldname + ', expired, sess) values (S.' + sidfieldname + ', S.expired, S.sess) ' +
+			'output inserted.*;';
+	}
+
+	/*
 	* Remove expired sessions from database.
 	* @param {Object} store
 	* @param {number} interval
@@ -221,43 +280,13 @@ module.exports = function(connect) {
 		var now = new Date().getTime();
 		var expired = maxAge ? now + maxAge : now + oneDay;
 		sess = JSON.stringify(sess);
-		var postgresfastq = 'with new_values (' + self.sidfieldname + ', expired, sess) as (' +
-		'  values (?, ?::timestamp with time zone, ?::json)' +
-		'), ' +
-		'upsert as ' +
-		'( ' +
-		'  update ' + self.tablename + ' cs set ' +
-		'    ' + self.sidfieldname + ' = nv.' + self.sidfieldname + ', ' +
-		'    expired = nv.expired, ' +
-		'    sess = nv.sess ' +
-		'  from new_values nv ' +
-		'  where cs.' + self.sidfieldname + ' = nv.' + self.sidfieldname + ' ' +
-		'  returning cs.* ' +
-		')' +
-		'insert into ' + self.tablename + ' (' + self.sidfieldname + ', expired, sess) ' +
-		'select ' + self.sidfieldname + ', expired, sess ' +
-		'from new_values ' +
-		'where not exists (select 1 from upsert up where up.' + self.sidfieldname + ' = new_values.' + self.sidfieldname + ')';
-
-		var sqlitefastq = 'insert or replace into ' + self.tablename + ' (' + self.sidfieldname + ', expired, sess) values (?, ?, ?);';
-
-		var mysqlfastq = 'insert into ' + self.tablename + ' (' + self.sidfieldname + ', expired, sess) values (?, ?, ?) on duplicate key update expired=values(expired), sess=values(sess);';
-
-		var mssqlfastq = 'merge ' + self.tablename + ' as T ' +
-		  'using (values (?, ?, ?)) as S (' + self.sidfieldname + ', expired, sess) ' +
-		  'on (T.' + self.sidfieldname + ' = S.' + self.sidfieldname + ') ' +
-		  'when matched then ' +
-		    'update set expired = S.expired, sess = S.sess ' +
-			'when not matched by target then ' +
-		  'insert (' + self.sidfieldname + ', expired, sess) values (S.' + self.sidfieldname + ', S.expired, S.sess) ' +
-		  'output inserted.*;';
 
 		var dbDate = dateAsISO(self.knex, expired);
 
 		if (isSqlite3(self.knex)) {
 			// sqlite optimized query
 			return self.ready.then(function () {
-				return self.knex.raw(sqlitefastq, [sid, dbDate, sess ])
+				return self.knex.raw(getSqliteFastQuery(self.tablename, self.sidfieldname), [sid, dbDate, sess ])
 				.then(function (result) {
 					return [1];
 				})
@@ -266,19 +295,19 @@ module.exports = function(connect) {
 		} else if (isPostgres(self.knex) && parseFloat(self.knex.client.version) >= 9.2) {
 			// postgresql optimized query
 			return self.ready.then(function () {
-				return self.knex.raw(postgresfastq, [sid, dbDate, sess ])
+				return self.knex.raw(getPostgresFastQuery(self.tablename, self.sidfieldname), [sid, dbDate, sess ])
 				.asCallback(fn);
 			});
 		} else if (isMySQL(self.knex)) {
 			// mysql/mariaDB optimized query
 			return self.ready.then(function () {
-				return self.knex.raw(mysqlfastq, [sid, dbDate, sess ])
+				return self.knex.raw(getMysqlFastQuery(self.tablename, self.sidfieldname), [sid, dbDate, sess ])
 				.asCallback(fn);
 			});
 		} else if (isMSSQL(self.knex)) {
 			// mysql/mariaDB optimized query
 			return self.ready.then(function () {
-				return self.knex.raw(mssqlfastq, [sid, dbDate, sess ])
+				return self.knex.raw(getMssqlFastQuery(self.tablename, self.sidfieldname), [sid, dbDate, sess ])
 				.asCallback(fn);
 			});
 		} else {
