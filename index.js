@@ -173,7 +173,7 @@ module.exports = function(connect) {
 			return store.knex(store.tablename).del()
 			.whereRaw(condition, dateAsISO(store.knex));
 		}).finally(function() {
-			setTimeout(dbCleanup, interval, store, interval).unref()
+			setTimeout(dbCleanup, interval, store, interval).unref();
 		});
 	}
 
@@ -261,7 +261,7 @@ module.exports = function(connect) {
 				}
 				return ret;
 			})
-			.asCallback(fn)
+			.asCallback(fn);
 		});
 	};
 
@@ -335,7 +335,7 @@ module.exports = function(connect) {
 						}
 					});
 				})
-				.asCallback(fn)
+				.asCallback(fn);
 			});
 		}
 	};
@@ -378,7 +378,7 @@ module.exports = function(connect) {
 			return self.knex.del()
 			.from(self.tablename)
 			.where(self.sidfieldname, '=', sid)
-			.asCallback(fn)
+			.asCallback(fn);
 		});
 	};
 
@@ -397,8 +397,8 @@ module.exports = function(connect) {
 			.then(function (response) {
 				return response[0].count | 0;
 			})
-			.asCallback(fn)
-		})
+			.asCallback(fn);
+		});
 	};
 
 
@@ -413,7 +413,7 @@ module.exports = function(connect) {
 		return self.ready.then(function () {
 			return self.knex.del()
 			.from(self.tablename)
-			.asCallback(fn)
+			.asCallback(fn);
 		});
 	};
 
