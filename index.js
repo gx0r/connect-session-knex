@@ -25,7 +25,7 @@ module.exports = function(connect) {
 		if(isOracle(knex)){
 			return date;
 		}
-		return isMySQL(knex) ? date.toISOString().slice(0, 19).replace('T', ' ') : date.toISOString();
+		return isMySQL(knex) || isMSSQL(knex) ? date.toISOString().slice(0, 19).replace('T', ' ') : date.toISOString();
 	}
 
 	/*
@@ -34,7 +34,7 @@ module.exports = function(connect) {
 	* @api private
 	*/
 	function timestampTypeName(knex) {
-		return isMySQL(knex) ? 'DATETIME' : knex.client.dialect === 'postgresql' ? 'timestamp with time zone' : 'timestamp';
+		return isMySQL(knex) || isMSSQL(knex) ? 'DATETIME' : knex.client.dialect === 'postgresql' ? 'timestamp with time zone' : 'timestamp';
 	}
 
 	/*
@@ -68,6 +68,15 @@ module.exports = function(connect) {
 	*/
 	function isMySQL(knex) {
 		return ['mysql', 'mariasql', 'mariadb'].indexOf(knex.client.dialect) > -1;
+	}
+
+	/*
+	* Returns true if the specified knex instance is using mssql.
+	* @return {bool}
+	* @api private
+	*/
+	function isMSSQL(knex) {
+		return ['mssql'].indexOf(knex.client.dialect) > -1;
 	}
 
 	/*
@@ -133,8 +142,12 @@ module.exports = function(connect) {
 			if (!exists && self.createtable) {
 				return self.knex.schema.createTable(self.tablename, function (table) {
 					table.string(self.sidfieldname).primary();
-					table.json('sess').notNullable();
-					if (['mysql', 'mariasql'].indexOf(self.knex.client.dialect) > -1) {
+					if (isMSSQL(self.knex)) {
+						table.text('sess').notNullable();
+					} else {
+						table.json('sess').notNullable();
+					}
+					if ((['mysql', 'mariasql'].indexOf(self.knex.client.dialect) > -1) || isMSSQL(self.knex)) {
 						table.dateTime('expired').notNullable().index();
 					} else {
 						table.timestamp('expired').notNullable().index();
@@ -221,6 +234,15 @@ module.exports = function(connect) {
 
 		var mysqlfastq = 'insert into ' + self.tablename + ' (' + self.sidfieldname + ', expired, sess) values (?, ?, ?) on duplicate key update expired=values(expired), sess=values(sess);';
 
+		var mssqlfastq = 'merge ' + self.tablename + ' as T ' +
+		  'using (values (?, ?, ?)) as S (' + self.sidfieldname + ', expired, sess) ' +
+		  'on (T.' + self.sidfieldname + ' = S.' + self.sidfieldname + ') ' +
+		  'when matched then ' +
+		    'update set expired = S.expired, sess = S.sess ' +
+			'when not matched by target then ' +
+		  'insert (' + self.sidfieldname + ', expired, sess) values (S.' + self.sidfieldname + ', S.expired, S.sess) ' +
+		  'output inserted.*;';
+
 		var dbDate = dateAsISO(self.knex, expired);
 
 		if (self.knex.client.dialect === 'sqlite3') {
@@ -242,6 +264,12 @@ module.exports = function(connect) {
 			// mysql/mariaDB optimized query
 			return self.ready.then(function () {
 				return self.knex.raw(mysqlfastq, [sid, dbDate, sess ])
+				.asCallback(fn);
+			});
+		} else if (isMSSQL(self.knex)) {
+			// mysql/mariaDB optimized query
+			return self.ready.then(function () {
+				return self.knex.raw(mssqlfastq, [sid, dbDate, sess ])
 				.asCallback(fn);
 			});
 		} else {
