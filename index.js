@@ -305,7 +305,7 @@ module.exports = function(connect) {
 				.asCallback(fn);
 			});
 		} else if (isMSSQL(self.knex)) {
-			// mysql/mariaDB optimized query
+			// mssql optimized query
 			return self.ready.then(function () {
 				return self.knex.raw(getMssqlFastQuery(self.tablename, self.sidfieldname), [sid, dbDate, sess ])
 				.asCallback(fn);
