@@ -22,13 +22,13 @@
   },
   "license": "ISC",
   "devDependencies": {
-    "bluebird": "^3.4.6",
-    "express": "^4.14.0",
-    "express-session": "^1.14.1",
-    "knex": "^0.12.2",
-    "mysql": "^2.11.1",
-    "pg": "^6.1.0",
-    "sqlite3": "^3.1.6",
-    "tape": "^4.6.2"
+    "bluebird": "^3.5.1",
+    "express": "^4.16.2",
+    "express-session": "^1.15.6",
+    "knex": "^0.14.0",
+    "mysql": "^2.15.0",
+    "pg": "^7.4.0",
+    "sqlite3": "^3.1.13",
+    "tape": "^4.8.0"
   }
 }
