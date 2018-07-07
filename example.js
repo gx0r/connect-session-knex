@@ -8,7 +8,7 @@ const store = new KnexSessionStore(/* options here */); // defaults to a sqlite3
 app.use(session({
     secret: 'keyboard cat',
     cookie: {
-        maxAge: 30000 // 2 seconds for testing
+        maxAge: 30000 // 30 seconds for testing
     },
     store: store
 }));
