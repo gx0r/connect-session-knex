@@ -173,7 +173,7 @@ module.exports = function(connect) {
 			return store.knex(store.tablename).del()
 			.whereRaw(condition, dateAsISO(store.knex));
 		}).finally(function() {
-			setTimeout(dbCleanup, interval, store, interval).unref();
+			KnexStore.nextDbCleanup = setTimeout(dbCleanup, interval, store, interval).unref();
 		});
 	}
 
@@ -415,6 +415,14 @@ module.exports = function(connect) {
 			.from(self.tablename)
 			.asCallback(fn);
 		});
+	};
+
+	/* stop the dbCleanupTimeout */
+	KnexStore.prototype.stopDbCleanup = function(){
+		if(KnexStore.nextDbCleanup){
+			clearTimeout(KnexStore.nextDbCleanup);
+			delete KnexStore.nextDbCleanup;
+		}
 	};
 
 	return KnexStore;
