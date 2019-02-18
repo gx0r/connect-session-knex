@@ -2,7 +2,7 @@ const express = require('express'); // Express 4
 const app = express();
 
 const session = require('express-session');
-const KnexSessionStore = require('./index.js')(session);
+const KnexSessionStore = require('connect-session-knex')(session);
 const store = new KnexSessionStore(/* options here */); // defaults to a sqlite3 database
 
 app.use(session({
