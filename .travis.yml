@@ -1,8 +1,8 @@
 language: node_js
 node_js:
-  - "4"
-  - "6"
-  - "7"
+  - "8"
+  - "10"
+  - "12"
 
 env:
   - CXX=g++-4.8
@@ -17,4 +17,4 @@ addons:
     - ubuntu-toolchain-r-test
     packages:
     - g++-4.8
-  postgresql: "9.3"
+  postgresql: "9.4"
