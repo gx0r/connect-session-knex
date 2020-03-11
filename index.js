@@ -527,7 +527,7 @@ module.exports = function(connect) {
     if (sess && sess.cookie && sess.cookie.expires) {
       var condition = expiredCondition(this.knex);
 
-      this.knex.asCallback = asCallback;
+      self.knex.asCallback = asCallback;
       return this.knex(this.tablename)
         .where(this.sidfieldname, "=", sid)
         .andWhereRaw(condition, dateAsISO(this.knex))
