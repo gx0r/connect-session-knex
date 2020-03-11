@@ -3,71 +3,6 @@ var util = require("util");
 
 var oneDay = 86400000;
 
-// **********************************
-// Start of hack copy of Bluebird's asCallback/nodeify
-var async = Promise._async;
-var ASSERT = require("assert");
-var tryCatch = util.tryCatch;
-var errorObj = util.errorObj;
-
-function spreadAdapter(val, nodeback) {
-  var promise = this;
-  if (!util.isArray(val)) return successAdapter.call(promise, val, nodeback);
-  var ret =
-    tryCatch(nodeback).apply(promise._boundValue(), [null].concat(val));
-  if (ret === errorObj) {
-    async.throwLater(ret.e);
-  }
-}
-
-function successAdapter(val, nodeback) {
-  var promise = this;
-  var receiver = promise._boundValue();
-  ASSERT(typeof nodeback == "function");
-  var ret = val === undefined
-    ? tryCatch(nodeback).call(receiver, null)
-    : tryCatch(nodeback).call(receiver, null, val);
-  if (ret === errorObj) {
-    async.throwLater(ret.e);
-  }
-}
-function errorAdapter(reason, nodeback) {
-  var promise = this;
-  if (!reason) {
-    var newReason = new Error(reason + "");
-    newReason.cause = reason;
-    reason = newReason;
-    ASSERT(!!reason);
-  }
-  ASSERT(typeof nodeback == "function");
-  var ret = tryCatch(nodeback).call(promise._boundValue(), reason);
-  if (ret === errorObj) {
-    async.throwLater(ret.e);
-  }
-}
-// Tweak to not modify the prototype so this impacts things as little as possible
-// Unfortunately, it will require adding it back with lots of:
-//     self.knex.asCallback = asCallback;
-// in the code below
-//Promise.prototype.asCallback = Promise.prototype.nodeify = function (nodeback,
-const asCallback = function (nodeback, options) {
-  if (typeof nodeback == "function") {
-    var adapter = successAdapter;
-    if (options !== undefined && Object(options).spread) {
-      adapter = spreadAdapter;
-    }
-    this._then(
-      adapter,
-      errorAdapter,
-      undefined,
-      this,
-      nodeback
-    );
-  }
-  return this;
-};
-// ***** End copy of Bluebird code *******
-
 module.exports = function(connect) {
   /**
    * Connect's Store.
@@ -432,7 +367,6 @@ module.exports = function(connect) {
     if (isSqlite3(self.knex)) {
       // sqlite optimized query
       return self.ready.then(function() {
-        self.knex.asCallback = asCallback;
         return self.knex
           .raw(getSqliteFastQuery(self.tablename, self.sidfieldname), [
             sid,
@@ -450,7 +384,6 @@ module.exports = function(connect) {
     ) {
       // postgresql optimized query
       return self.ready.then(function() {
-        self.knex.asCallback = asCallback;
         return self.knex
           .raw(getPostgresFastQuery(self.tablename, self.sidfieldname), [
             sid,
@@ -462,7 +395,6 @@ module.exports = function(connect) {
     } else if (isMySQL(self.knex)) {
       // mysql/mariaDB optimized query
       return self.ready.then(function() {
-        self.knex.asCallback = asCallback;
         return self.knex
           .raw(getMysqlFastQuery(self.tablename, self.sidfieldname), [
             sid,
@@ -474,7 +406,6 @@ module.exports = function(connect) {
     } else if (isMSSQL(self.knex)) {
       // mssql optimized query
       return self.ready.then(function() {
-        self.knex.asCallback = asCallback;
         return self.knex
           .raw(getMssqlFastQuery(self.tablename, self.sidfieldname), [
             sid,
@@ -485,7 +416,6 @@ module.exports = function(connect) {
       });
     } else {
       return self.ready.then(function() {
-        self.knex.asCallback = asCallback;
         return self.knex
           .transaction(function(trx) {
             return trx
@@ -527,7 +457,6 @@ module.exports = function(connect) {
     if (sess && sess.cookie && sess.cookie.expires) {
       var condition = expiredCondition(this.knex);
 
-      self.knex.asCallback = asCallback;
       return this.knex(this.tablename)
         .where(this.sidfieldname, "=", sid)
         .andWhereRaw(condition, dateAsISO(this.knex))
@@ -549,7 +478,6 @@ module.exports = function(connect) {
   KnexStore.prototype.destroy = function(sid, fn) {
     var self = this;
     return self.ready.then(function() {
-      self.knex.asCallback = asCallback;
       return self.knex
         .del()
         .from(self.tablename)
@@ -567,7 +495,6 @@ module.exports = function(connect) {
   KnexStore.prototype.length = function(fn) {
     var self = this;
     return self.ready.then(function() {
-      self.knex.asCallback = asCallback;
       return self.knex
         .count(self.sidfieldname + " as count")
         .from(self.tablename)
@@ -587,7 +514,6 @@ module.exports = function(connect) {
   KnexStore.prototype.clear = function(fn) {
     var self = this;
     return self.ready.then(function() {
-      self.knex.asCallback = asCallback;
       return self.knex
         .del()
         .from(self.tablename)
