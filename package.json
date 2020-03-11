@@ -22,7 +22,7 @@
   },
   "license": "ISC",
   "devDependencies": {
-    "bluebird": "^3.7.1",
+    "bluebird": "^3.7.2",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
     "knex": "^0.20.1",

@@ -1,4 +1,6 @@
 "use strict";
+var Bluebird = require("bluebird");
+var resolve = Bluebird.resolve;
 var util = require("util");
 
 var oneDay = 86400000;
@@ -328,7 +330,7 @@ module.exports = function(connect) {
     var self = this;
     return self.ready.then(function() {
       var condition = expiredCondition(self.knex);
-      return self.knex
+      return resolve(self.knex
         .select("sess")
         .from(self.tablename)
         .where(self.sidfieldname, "=", sid)
@@ -342,7 +344,7 @@ module.exports = function(connect) {
             }
           }
           return ret;
-        })
+        }))
         .asCallback(fn);
     });
   };
@@ -367,7 +369,7 @@ module.exports = function(connect) {
     if (isSqlite3(self.knex)) {
       // sqlite optimized query
       return self.ready.then(function() {
-        return self.knex
+        return resolve(self.knex
           .raw(getSqliteFastQuery(self.tablename, self.sidfieldname), [
             sid,
             dbDate,
@@ -375,7 +377,7 @@ module.exports = function(connect) {
           ])
           .then(function(result) {
             return [1];
-          })
+          }))
           .asCallback(fn);
       });
     } else if (
@@ -384,39 +386,39 @@ module.exports = function(connect) {
     ) {
       // postgresql optimized query
       return self.ready.then(function() {
-        return self.knex
+        return resolve(self.knex
           .raw(getPostgresFastQuery(self.tablename, self.sidfieldname), [
             sid,
             dbDate,
             sess
-          ])
+          ]))
           .asCallback(fn);
       });
     } else if (isMySQL(self.knex)) {
       // mysql/mariaDB optimized query
       return self.ready.then(function() {
-        return self.knex
+        return resolve(self.knex
           .raw(getMysqlFastQuery(self.tablename, self.sidfieldname), [
             sid,
             dbDate,
             sess
-          ])
+          ]))
           .asCallback(fn);
       });
     } else if (isMSSQL(self.knex)) {
       // mssql optimized query
       return self.ready.then(function() {
-        return self.knex
+        return resolve(self.knex
           .raw(getMssqlFastQuery(self.tablename, self.sidfieldname), [
             sid,
             dbDate,
             sess
-          ])
+          ]))
           .asCallback(fn);
       });
     } else {
       return self.ready.then(function() {
-        return self.knex
+        return resolve(self.knex
           .transaction(function(trx) {
             return trx
               .select("*")
@@ -439,7 +441,7 @@ module.exports = function(connect) {
                     });
                 }
               });
-          })
+          }))
           .asCallback(fn);
       });
     }
@@ -457,12 +459,12 @@ module.exports = function(connect) {
     if (sess && sess.cookie && sess.cookie.expires) {
       var condition = expiredCondition(this.knex);
 
-      return this.knex(this.tablename)
+      return resolve(this.knex(this.tablename)
         .where(this.sidfieldname, "=", sid)
         .andWhereRaw(condition, dateAsISO(this.knex))
         .update({
           expired: dateAsISO(this.knex, sess.cookie.expires)
-        })
+        }))
         .asCallback(fn);
     }
 
@@ -478,10 +480,10 @@ module.exports = function(connect) {
   KnexStore.prototype.destroy = function(sid, fn) {
     var self = this;
     return self.ready.then(function() {
-      return self.knex
+      return resolve(self.knex
         .del()
         .from(self.tablename)
-        .where(self.sidfieldname, "=", sid)
+        .where(self.sidfieldname, "=", sid))
         .asCallback(fn);
     });
   };
@@ -495,12 +497,12 @@ module.exports = function(connect) {
   KnexStore.prototype.length = function(fn) {
     var self = this;
     return self.ready.then(function() {
-      return self.knex
+      return resolve(self.knex
         .count(self.sidfieldname + " as count")
         .from(self.tablename)
         .then(function(response) {
           return response[0].count | 0;
-        })
+        }))
         .asCallback(fn);
     });
   };
@@ -514,9 +516,9 @@ module.exports = function(connect) {
   KnexStore.prototype.clear = function(fn) {
     var self = this;
     return self.ready.then(function() {
-      return self.knex
+      return resolve(self.knex
         .del()
-        .from(self.tablename)
+        .from(self.tablename))
         .asCallback(fn);
     });
   };
