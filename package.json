@@ -21,14 +21,16 @@
     "test": "node test.js"
   },
   "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.7.2"
+  },
   "devDependencies": {
-    "bluebird": "^3.7.2",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
-    "knex": "^0.20.1",
-    "mysql": "^2.17.1",
-    "pg": "^7.12.1",
-    "sqlite3": "^4.1.0",
-    "tape": "^4.11.0"
+    "knex": "^0.20.11",
+    "mysql": "^2.18.1",
+    "pg": "^7.18.2",
+    "sqlite3": "^4.1.1",
+    "tape": "^4.13.2"
   }
 }
