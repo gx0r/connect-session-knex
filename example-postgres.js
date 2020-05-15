@@ -1,3 +1,7 @@
+/* eslint-disable import/no-unresolved */
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable no-console */
+
 const express = require('express');
 
 const app = express();
@@ -32,11 +36,9 @@ app.use(
   }),
 );
 
-const count = 0;
-
-app.use('/', (req, res, next) => {
-  let n = req.session.views || 0;
-  req.session.views = ++n;
+app.use('/', (req, res) => {
+  const n = req.session.views || 0;
+  req.session.views = n + 1;
   res.end(`${n} views`);
 });
 
