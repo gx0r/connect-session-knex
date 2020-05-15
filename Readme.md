@@ -75,3 +75,11 @@ If a knex instance is not provided, this module will attempt to create a sqlite3
 [gitter-channel-url]: https://gitter.im/llambda/connect-session-knex
 [express-session-url]: https://github.com/expressjs/session
 [io-url]: https://iojs.org
+
+## Testing
+
+- Install both Postgresql
+- Install Mysql
+- Create a user called `travis` and don't give it a password
+- Make sure both the MySQL and Postgres services are running
+- `npm run test`
