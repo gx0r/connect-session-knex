@@ -23,7 +23,8 @@
   },
   "license": "ISC",
   "dependencies": {
-    "bluebird": "^3.7.2"
+    "bluebird": "^3.7.2",
+    "knex": "^0.21.1"
   },
   "devDependencies": {
     "eslint": "^7.0.0",
@@ -31,7 +32,6 @@
     "eslint-plugin-import": "^2.20.2",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
-    "knex": "^0.20.15",
     "mysql": "^2.18.1",
     "pg": "^7.18.2",
     "sqlite3": "^4.1.1",
