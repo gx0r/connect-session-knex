@@ -372,7 +372,7 @@ module.exports = function (connect) {
           dbDate,
           sess,
         ])
-        .then((result) => [1]))
+        .then(() => [1]))
         .asCallback(fn));
     } if (
       isPostgres(self.knex)
