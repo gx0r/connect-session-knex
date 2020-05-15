@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-nested-ternary */
@@ -10,7 +11,6 @@ const util = require('util');
 
 const oneDay = 86400000;
 
-
 /*
    * Returns true if the specified knex instance is using sqlite3.
    * @return {bool}
@@ -21,52 +21,39 @@ function isSqlite3(knex) {
 }
 
 /*
-   * Returns true if the specified knex instance is using mysql.
-   * @return {bool}
-   * @api private
-   */
+     * Returns true if the specified knex instance is using mysql.
+     * @return {bool}
+     * @api private
+     */
 function isMySQL(knex) {
   return ['mysql', 'mariasql', 'mariadb'].indexOf(knex.client.dialect) > -1;
 }
 
 /*
-   * Returns true if the specified knex instance is using mssql.
-   * @return {bool}
-   * @api private
-   */
+     * Returns true if the specified knex instance is using mssql.
+     * @return {bool}
+     * @api private
+     */
 function isMSSQL(knex) {
   return ['mssql'].indexOf(knex.client.dialect) > -1;
 }
 
 /*
-   * Returns true if the specified knex instance is using postgresql.
-   * @return {bool}
-   * @api private
-   */
+     * Returns true if the specified knex instance is using postgresql.
+     * @return {bool}
+     * @api private
+     */
 function isPostgres(knex) {
   return ['postgresql'].indexOf(knex.client.dialect) > -1;
 }
 
 /*
-   * Returns true if the specified knex instance is using oracle.
-   * @return {bool}
-   * @api private
-   */
+     * Returns true if the specified knex instance is using oracle.
+     * @return {bool}
+     * @api private
+     */
 function isOracle(knex) {
   return ['oracle', 'oracledb'].indexOf(knex.client.dialect) > -1;
-}
-
-/*
-   * Return dialect-aware type name for timestamp
-   * @return {String} type name for timestamp
-   * @api private
-   */
-function timestampTypeName(knex) {
-  return isMySQL(knex) || isMSSQL(knex)
-    ? 'DATETIME'
-    : isPostgres(knex)
-      ? 'timestamp with time zone'
-      : 'timestamp';
 }
 
 
@@ -91,6 +78,19 @@ function dateAsISO(knex, aDate) {
       .slice(0, 19)
       .replace('T', ' ')
     : date.toISOString();
+}
+
+/*
+   * Return dialect-aware type name for timestamp
+   * @return {String} type name for timestamp
+   * @api private
+   */
+function timestampTypeName(knex) {
+  return isMySQL(knex) || isMSSQL(knex)
+    ? 'DATETIME'
+    : isPostgres(knex)
+      ? 'timestamp with time zone'
+      : 'timestamp';
 }
 
 /*
@@ -218,14 +218,13 @@ function getMssqlFastQuery(tablename, sidfieldname) {
   );
 }
 
-
 /*
    * Remove expired sessions from database.
    * @param {Object} store
    * @param {number} interval
    * @api private
    */
-function dbCleanup(store, interval, KnexStoreClass) {
+function dbCleanup(store, interval, KnexStore) {
   return store.ready
     .then(() => {
       let condition = `expired < CAST(? as ${timestampTypeName(store.knex)})`;
@@ -241,7 +240,7 @@ function dbCleanup(store, interval, KnexStoreClass) {
         .whereRaw(condition, dateAsISO(store.knex));
     })
     .finally(() => {
-      KnexStoreClass.nextDbCleanup = setTimeout(
+      KnexStore.nextDbCleanup = setTimeout(
         dbCleanup,
         interval,
         store,
@@ -250,11 +249,12 @@ function dbCleanup(store, interval, KnexStoreClass) {
     });
 }
 
-module.exports = (connect) => {
+module.exports = function (connect) {
   /**
    * Connect's Store.
    */
   const Store = connect.session ? connect.session.Store : connect.Store;
+
   /*
    * Initialize KnexStore with the given options.
    *
@@ -278,13 +278,13 @@ module.exports = (connect) => {
     self.tablename = options.tablename || 'sessions';
     self.sidfieldname = options.sidfieldname || 'sid';
     self.knex = options.knex
-        || knexFactory({
-          client: 'sqlite3',
-          // debug: true,
-          connection: {
-            filename: 'connect-session-knex.sqlite',
-          },
-        });
+      || knexFactory({
+        client: 'sqlite3',
+        // debug: true,
+        connection: {
+          filename: 'connect-session-knex.sqlite',
+        },
+      });
 
     self.ready = self.knex.schema
       .hasTable(self.tablename)
@@ -324,13 +324,13 @@ module.exports = (connect) => {
   util.inherits(KnexStore, Store);
 
   /*
-     * Attempt to fetch session by the given sid.
-     *
-     * @param {String} sid
-     * @param {Function} fn
-     * @api public
-     */
-  KnexStore.prototype.get = (sid, fn) => {
+   * Attempt to fetch session by the given sid.
+   *
+   * @param {String} sid
+   * @param {Function} fn
+   * @api public
+   */
+  KnexStore.prototype.get = function (sid, fn) {
     const self = this;
     return self.ready.then(() => {
       const condition = expiredCondition(self.knex);
@@ -354,14 +354,14 @@ module.exports = (connect) => {
   };
 
   /*
-     * Commit the given `sess` object associated with the given `sid`.
-     *
-     * @param {String} sid
-     * @param {Session} sess
-     * @param {Function} fn
-     * @api public
-     */
-  KnexStore.prototype.set = (sid, sess, fn) => {
+   * Commit the given `sess` object associated with the given `sid`.
+   *
+   * @param {String} sid
+   * @param {Session} sess
+   * @param {Function} fn
+   * @api public
+   */
+  KnexStore.prototype.set = function (sid, sess, fn) {
     const self = this;
     const { maxAge } = sess.cookie;
     const now = new Date().getTime();
@@ -382,7 +382,7 @@ module.exports = (connect) => {
         .asCallback(fn));
     } if (
       isPostgres(self.knex)
-        && parseFloat(self.knex.client.version) >= 9.2
+      && parseFloat(self.knex.client.version) >= 9.2
     ) {
       // postgresql optimized query
       return self.ready.then(() => resolve(self.knex
@@ -436,14 +436,14 @@ module.exports = (connect) => {
   };
 
   /**
-     * Touch the given session object associated with the given session ID.
-     *
-     * @param {String} sid
-     * @param {Session} sess
-     * @param {Function} fn
-     * @public
-     */
-  KnexStore.prototype.touch = (sid, sess, fn) => {
+   * Touch the given session object associated with the given session ID.
+   *
+   * @param {String} sid
+   * @param {Session} sess
+   * @param {Function} fn
+   * @public
+   */
+  KnexStore.prototype.touch = function (sid, sess, fn) {
     if (sess && sess.cookie && sess.cookie.expires) {
       const condition = expiredCondition(this.knex);
 
@@ -457,16 +457,16 @@ module.exports = (connect) => {
     }
 
     fn();
-    return undefined;
+    return null;
   };
 
   /*
-     * Destroy the session associated with the given `sid`.
-     *
-     * @param {String} sid
-     * @api public
-     */
-  KnexStore.prototype.destroy = (sid, fn) => {
+   * Destroy the session associated with the given `sid`.
+   *
+   * @param {String} sid
+   * @api public
+   */
+  KnexStore.prototype.destroy = function (sid, fn) {
     const self = this;
     return self.ready.then(() => resolve(self.knex
       .del()
@@ -476,27 +476,28 @@ module.exports = (connect) => {
   };
 
   /*
-     * Fetch number of sessions.
-     *
-     * @param {Function} fn
-     * @api public
-     */
-  KnexStore.prototype.length = (fn) => {
+   * Fetch number of sessions.
+   *
+   * @param {Function} fn
+   * @api public
+   */
+  KnexStore.prototype.length = function (fn) {
     const self = this;
     return self.ready.then(() => resolve(self.knex
       .count(`${self.sidfieldname} as count`)
       .from(self.tablename)
-      .then((response) => response[0].count || 0))
+      // eslint-disable-next-line no-bitwise
+      .then((response) => response[0].count | 0))
       .asCallback(fn));
   };
 
   /*
-     * Clear all sessions.
-     *
-     * @param {Function} fn
-     * @api public
-     */
-  KnexStore.prototype.clear = (fn) => {
+   * Clear all sessions.
+   *
+   * @param {Function} fn
+   * @api public
+   */
+  KnexStore.prototype.clear = function (fn) {
     const self = this;
     return self.ready.then(() => resolve(self.knex
       .del()
@@ -505,7 +506,7 @@ module.exports = (connect) => {
   };
 
   /* stop the dbCleanupTimeout */
-  KnexStore.prototype.stopDbCleanup = () => {
+  KnexStore.prototype.stopDbCleanup = function () {
     if (KnexStore.nextDbCleanup) {
       clearTimeout(KnexStore.nextDbCleanup);
       delete KnexStore.nextDbCleanup;
