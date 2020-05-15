@@ -26,6 +26,9 @@
     "bluebird": "^3.7.2"
   },
   "devDependencies": {
+    "eslint": "^7.0.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.20.2",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "knex": "^0.20.15",
