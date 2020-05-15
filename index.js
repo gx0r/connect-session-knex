@@ -1,9 +1,9 @@
-/* eslint-disable global-require */
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-nested-ternary */
 
 const Bluebird = require('bluebird');
+const knexFactory = require('knex');
 
 const { resolve } = Bluebird;
 const util = require('util');
@@ -278,7 +278,7 @@ module.exports = (connect) => {
     self.tablename = options.tablename || 'sessions';
     self.sidfieldname = options.sidfieldname || 'sid';
     self.knex = options.knex
-        || require('knex')({
+        || knexFactory({
           client: 'sqlite3',
           // debug: true,
           connection: {
