@@ -1,222 +1,220 @@
-"use strict";
+/* eslint-disable no-shadow */
 
-var Promise = require("bluebird");
+const Promise = require('bluebird');
+
 Promise.longStackTraces();
 
-var test = require("tape");
-var session = require("express-session");
-var KnexStore = require("./index.js")(session);
-var knexPg = require("knex")({
-  client: "pg",
+const test = require('tape');
+const session = require('express-session');
+const knexPg = require('knex')({
+  client: 'pg',
   connection: {
-    host: "127.0.0.1",
-    user: "postgres",
-    password: "",
-    database: "travis_ci_test"
-  }
+    host: '127.0.0.1',
+    user: 'postgres',
+    password: '',
+    database: 'travis_ci_test',
+  },
 });
-var knexMysql = require("knex")({
-  client: "mysql",
+const knexMysql = require('knex')({
+  client: 'mysql',
   connection: {
-    host: "127.0.0.1",
-    user: "travis",
-    password: "",
-    database: "travis_ci_test"
-  }
+    host: '127.0.0.1',
+    user: 'travis',
+    password: '',
+    database: 'travis_ci_test',
+  },
 });
+const KnexStore = require('./index.js')(session);
 
-var stores = [];
+
+const stores = [];
 stores.push(
   new KnexStore({
-    db: ":memory:",
-    dir: "dbs"
-  })
+    db: ':memory:',
+    dir: 'dbs',
+  }),
 );
 stores.push(
   new KnexStore({
-    knex: knexPg
-  })
+    knex: knexPg,
+  }),
 );
 stores.push(
   new KnexStore({
-    knex: knexMysql
-  })
+    knex: knexMysql,
+  }),
 );
 
-stores.forEach(function(store) {
-  test("initial clear", function(t) {
+stores.forEach((store) => {
+  test('initial clear', (t) => {
     t.plan(3);
-    store.clear(function(err, success) {
+    store.clear((err) => {
       t.error(err);
 
-      store.length(function(err, len) {
-        t.error(err, "no error after clear");
-        t.equal(len, 0, "empty after clear");
+      store.length((err, len) => {
+        t.error(err, 'no error after clear');
+        t.equal(len, 0, 'empty after clear');
       });
     });
   });
 
-  test("set then clear", function(t) {
+  test('set then clear', (t) => {
     t.plan(4);
 
     store
-      .set("1092348234", {
+      .set('1092348234', {
         cookie: {
-          maxAge: 1000
+          maxAge: 1000,
         },
-        name: "InsertThenClear"
+        name: 'InsertThenClear',
       })
-      .then(function() {
-        store.clear(function(err, cleared) {
+      .then(() => {
+        store.clear((err, cleared) => {
           t.error(err);
-          t.equal(1, cleared, "cleared 1");
+          t.equal(1, cleared, 'cleared 1');
 
-          store.length(function(err, len) {
-            t.error(err, "no error after clear");
-            t.equal(len, 0, "empty after clear");
+          store.length((err, len) => {
+            t.error(err, 'no error after clear');
+            t.equal(len, 0, 'empty after clear');
           });
         });
       });
   });
 
-  test("double clear", function(t) {
+  test('double clear', (t) => {
     t.plan(4);
 
     store
       .clear()
-      .then(function() {
-        return store.clear();
-      })
-      .then(function() {
-        store.clear(function(err, cleared) {
+      .then(() => store.clear())
+      .then(() => {
+        store.clear((err, cleared) => {
           t.error(err);
-          t.equal(0, cleared, "cleared 0");
+          t.equal(0, cleared, 'cleared 0');
 
-          store.length(function(err, len) {
-            t.notOk(err, "no error after clear");
-            t.equal(len, 0, "length");
+          store.length((err, len) => {
+            t.notOk(err, 'no error after clear');
+            t.equal(len, 0, 'length');
           });
         });
       });
   });
 
-  test("destroy", function(t) {
+  test('destroy', (t) => {
     t.plan(4);
 
     store.set(
-      "555666777",
+      '555666777',
       {
         cookie: {
-          maxAge: 1000
+          maxAge: 1000,
         },
-        name: "Rob Dobilina"
+        name: 'Rob Dobilina',
       },
-      function(err, rows) {
+      (err, rows) => {
         t.error(err);
         if (rows.rowCount && rows.rowCount > 1) {
-          t.fail("Row count too large");
+          t.fail('Row count too large');
         }
 
-        store.destroy("555666777", function(err) {
+        store.destroy('555666777', (err) => {
           t.error(err);
 
-          store.length(function(err, len) {
-            t.error(err, "error");
+          store.length((err, len) => {
+            t.error(err, 'error');
             t.equal(len, 0);
           });
         });
-      }
+      },
     );
   });
 
-  test("set", function(t) {
+  test('set', (t) => {
     store.set(
-      "1111222233334444",
+      '1111222233334444',
       {
         cookie: {
-          maxAge: 20000
+          maxAge: 20000,
         },
-        name: "sample name"
+        name: 'sample name',
       },
-      function(err, rows) {
+      (err, rows) => {
         t.error(err);
         if (rows.rowCount) {
-          t.equal(rows.rowCount, 1, "row count");
+          t.equal(rows.rowCount, 1, 'row count');
         }
         t.end();
-      }
+      },
     );
   });
 
-  test("retrieve", function(t) {
+  test('retrieve', (t) => {
     t.plan(3);
 
-    store.get("1111222233334444", function(err, session) {
+    store.get('1111222233334444', (err, session) => {
       t.error(err);
-      t.ok(session, "session");
+      t.ok(session, 'session');
       t.deepEqual(session, {
         cookie: {
-          maxAge: 20000
+          maxAge: 20000,
         },
-        name: "sample name"
+        name: 'sample name',
       });
     });
   });
 
-  test("unknown session", function(t) {
+  test('unknown session', (t) => {
     t.plan(2);
 
-    store.get("hope-and-change", function(err, rows) {
+    store.get('hope-and-change', (err, rows) => {
       t.error(err);
-      t.equal(rows, undefined, "unknown session is not undefined");
+      t.equal(rows, undefined, 'unknown session is not undefined');
     });
   });
 
-  test("only one session should exist", function(t) {
+  test('only one session should exist', (t) => {
     t.plan(2);
 
-    store.length(function(err, len) {
+    store.length((err, len) => {
       t.error(err);
       t.equal(len, 1);
     });
   });
 
-  test("touch", function(t) {
+  test('touch', (t) => {
     t.plan(3);
 
     store
       .clear()
-      .then(function() {
-        return store.set("11112222333344445555", {
-          cookie: {
-            maxAge: 20000
-          },
-          name: "sample name"
-        });
-      })
-      .then(function() {
+      .then(() => store.set('11112222333344445555', {
+        cookie: {
+          maxAge: 20000,
+        },
+        name: 'sample name',
+      }))
+      .then(() => {
         store.touch(
-          "11112222333344445555",
+          '11112222333344445555',
           {
             cookie: {
               maxAge: 20000,
-              expires: new Date()
+              expires: new Date(),
             },
-            name: "sample name"
+            name: 'sample name',
           },
-          function(err) {
+          (err) => {
             t.error(err);
 
-            store.length(function(err, len) {
-              t.error(err, "error");
+            store.length((err, len) => {
+              t.error(err, 'error');
               t.equal(len, 1);
             });
-          }
+          },
         );
       });
   });
 
-  test("cleanup", function(t) {
+  test('cleanup', (t) => {
     store.knex.destroy().then(t.end);
   });
 });

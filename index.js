@@ -10,8 +10,6 @@ const util = require('util');
 
 const oneDay = 86400000;
 
-let Store;
-
 
 /*
    * Returns true if the specified knex instance is using sqlite3.
@@ -252,267 +250,267 @@ function dbCleanup(store, interval, KnexStoreClass) {
     });
 }
 
-/*
+module.exports = (connect) => {
+  /**
+   * Connect's Store.
+   */
+  const Store = connect.session ? connect.session.Store : connect.Store;
+  /*
    * Initialize KnexStore with the given options.
    *
    * @param {Object} options
    * @api public
    */
-function KnexStore(options) {
-  const self = this;
+  function KnexStore(options) {
+    const self = this;
 
-  options = options || {};
-  Store.call(self, options);
+    options = options || {};
+    Store.call(self, options);
 
-  if (!options.clearInterval) {
-    // Time to run clear expired function.
-    options.clearInterval = 60000;
-  }
+    if (!options.clearInterval) {
+      // Time to run clear expired function.
+      options.clearInterval = 60000;
+    }
 
-  self.createtable = options.hasOwnProperty('createtable')
-    ? options.createtable
-    : true;
-  self.tablename = options.tablename || 'sessions';
-  self.sidfieldname = options.sidfieldname || 'sid';
-  self.knex = options.knex
-      || require('knex')({
-        client: 'sqlite3',
-        // debug: true,
-        connection: {
-          filename: 'connect-session-knex.sqlite',
-        },
-      });
-
-  self.ready = self.knex.schema
-    .hasTable(self.tablename)
-    .then((exists) => {
-      if (!exists && self.createtable) {
-        return self.knex.schema.createTable(self.tablename, (table) => {
-          table.string(self.sidfieldname).primary();
-          if (isMSSQL(self.knex)) {
-            table.text('sess').notNullable();
-          } else {
-            table.json('sess').notNullable();
-          }
-          if (isMySQL(self.knex) || isMSSQL(self.knex)) {
-            table
-              .dateTime('expired')
-              .notNullable()
-              .index();
-          } else {
-            table
-              .timestamp('expired')
-              .notNullable()
-              .index();
-          }
+    self.createtable = options.hasOwnProperty('createtable')
+      ? options.createtable
+      : true;
+    self.tablename = options.tablename || 'sessions';
+    self.sidfieldname = options.sidfieldname || 'sid';
+    self.knex = options.knex
+        || require('knex')({
+          client: 'sqlite3',
+          // debug: true,
+          connection: {
+            filename: 'connect-session-knex.sqlite',
+          },
         });
-      }
-      return exists;
-    })
-    .then((exists) => {
-      if (exists) {
-        dbCleanup(self, options.clearInterval, KnexStore);
-      }
-      return null;
-    });
-}
 
-// KnexStore.prototype.__proto__ = Store.prototype;
-util.inherits(KnexStore, Store);
+    self.ready = self.knex.schema
+      .hasTable(self.tablename)
+      .then((exists) => {
+        if (!exists && self.createtable) {
+          return self.knex.schema.createTable(self.tablename, (table) => {
+            table.string(self.sidfieldname).primary();
+            if (isMSSQL(self.knex)) {
+              table.text('sess').notNullable();
+            } else {
+              table.json('sess').notNullable();
+            }
+            if (isMySQL(self.knex) || isMSSQL(self.knex)) {
+              table
+                .dateTime('expired')
+                .notNullable()
+                .index();
+            } else {
+              table
+                .timestamp('expired')
+                .notNullable()
+                .index();
+            }
+          });
+        }
+        return exists;
+      })
+      .then((exists) => {
+        if (exists) {
+          dbCleanup(self, options.clearInterval, KnexStore);
+        }
+        return null;
+      });
+  }
 
-/*
-   * Attempt to fetch session by the given sid.
-   *
-   * @param {String} sid
-   * @param {Function} fn
-   * @api public
-   */
-KnexStore.prototype.get = (sid, fn) => {
-  const self = this;
-  return self.ready.then(() => {
-    const condition = expiredCondition(self.knex);
-    return resolve(self.knex
-      .select('sess')
-      .from(self.tablename)
-      .where(self.sidfieldname, '=', sid)
-      .andWhereRaw(condition, dateAsISO(self.knex))
-      .then((response) => {
-        let ret;
-        if (response[0]) {
-          ret = response[0].sess;
-          if (typeof ret === 'string') {
-            ret = JSON.parse(ret);
+  // KnexStore.prototype.__proto__ = Store.prototype;
+  util.inherits(KnexStore, Store);
+
+  /*
+     * Attempt to fetch session by the given sid.
+     *
+     * @param {String} sid
+     * @param {Function} fn
+     * @api public
+     */
+  KnexStore.prototype.get = (sid, fn) => {
+    const self = this;
+    return self.ready.then(() => {
+      const condition = expiredCondition(self.knex);
+      return resolve(self.knex
+        .select('sess')
+        .from(self.tablename)
+        .where(self.sidfieldname, '=', sid)
+        .andWhereRaw(condition, dateAsISO(self.knex))
+        .then((response) => {
+          let ret;
+          if (response[0]) {
+            ret = response[0].sess;
+            if (typeof ret === 'string') {
+              ret = JSON.parse(ret);
+            }
           }
-        }
-        return ret;
-      }))
-      .asCallback(fn);
-  });
-};
+          return ret;
+        }))
+        .asCallback(fn);
+    });
+  };
 
-/*
-   * Commit the given `sess` object associated with the given `sid`.
-   *
-   * @param {String} sid
-   * @param {Session} sess
-   * @param {Function} fn
-   * @api public
-   */
-KnexStore.prototype.set = (sid, sess, fn) => {
-  const self = this;
-  const { maxAge } = sess.cookie;
-  const now = new Date().getTime();
-  const expired = maxAge ? now + maxAge : now + oneDay;
-  sess = JSON.stringify(sess);
+  /*
+     * Commit the given `sess` object associated with the given `sid`.
+     *
+     * @param {String} sid
+     * @param {Session} sess
+     * @param {Function} fn
+     * @api public
+     */
+  KnexStore.prototype.set = (sid, sess, fn) => {
+    const self = this;
+    const { maxAge } = sess.cookie;
+    const now = new Date().getTime();
+    const expired = maxAge ? now + maxAge : now + oneDay;
+    sess = JSON.stringify(sess);
 
-  const dbDate = dateAsISO(self.knex, expired);
+    const dbDate = dateAsISO(self.knex, expired);
 
-  if (isSqlite3(self.knex)) {
-    // sqlite optimized query
+    if (isSqlite3(self.knex)) {
+      // sqlite optimized query
+      return self.ready.then(() => resolve(self.knex
+        .raw(getSqliteFastQuery(self.tablename, self.sidfieldname), [
+          sid,
+          dbDate,
+          sess,
+        ])
+        .then(() => [1]))
+        .asCallback(fn));
+    } if (
+      isPostgres(self.knex)
+        && parseFloat(self.knex.client.version) >= 9.2
+    ) {
+      // postgresql optimized query
+      return self.ready.then(() => resolve(self.knex
+        .raw(getPostgresFastQuery(self.tablename, self.sidfieldname), [
+          sid,
+          dbDate,
+          sess,
+        ]))
+        .asCallback(fn));
+    } if (isMySQL(self.knex)) {
+      // mysql/mariaDB optimized query
+      return self.ready.then(() => resolve(self.knex
+        .raw(getMysqlFastQuery(self.tablename, self.sidfieldname), [
+          sid,
+          dbDate,
+          sess,
+        ]))
+        .asCallback(fn));
+    } if (isMSSQL(self.knex)) {
+      // mssql optimized query
+      return self.ready.then(() => resolve(self.knex
+        .raw(getMssqlFastQuery(self.tablename, self.sidfieldname), [
+          sid,
+          dbDate,
+          sess,
+        ]))
+        .asCallback(fn));
+    }
     return self.ready.then(() => resolve(self.knex
-      .raw(getSqliteFastQuery(self.tablename, self.sidfieldname), [
-        sid,
-        dbDate,
-        sess,
-      ])
-      .then(() => [1]))
+      .transaction((trx) => trx
+        .select('*')
+        .forUpdate()
+        .from(self.tablename)
+        .where(self.sidfieldname, '=', sid)
+        .then((foundKeys) => {
+          if (foundKeys.length === 0) {
+            return trx.from(self.tablename).insert({
+              [self.sidfieldname]: sid,
+              expired: dbDate,
+              sess,
+            });
+          }
+          return trx(self.tablename)
+            .where(self.sidfieldname, '=', sid)
+            .update({
+              expired: dbDate,
+              sess,
+            });
+        })))
       .asCallback(fn));
-  } if (
-    isPostgres(self.knex)
-      && parseFloat(self.knex.client.version) >= 9.2
-  ) {
-    // postgresql optimized query
-    return self.ready.then(() => resolve(self.knex
-      .raw(getPostgresFastQuery(self.tablename, self.sidfieldname), [
-        sid,
-        dbDate,
-        sess,
-      ]))
-      .asCallback(fn));
-  } if (isMySQL(self.knex)) {
-    // mysql/mariaDB optimized query
-    return self.ready.then(() => resolve(self.knex
-      .raw(getMysqlFastQuery(self.tablename, self.sidfieldname), [
-        sid,
-        dbDate,
-        sess,
-      ]))
-      .asCallback(fn));
-  } if (isMSSQL(self.knex)) {
-    // mssql optimized query
-    return self.ready.then(() => resolve(self.knex
-      .raw(getMssqlFastQuery(self.tablename, self.sidfieldname), [
-        sid,
-        dbDate,
-        sess,
-      ]))
-      .asCallback(fn));
-  }
-  return self.ready.then(() => resolve(self.knex
-    .transaction((trx) => trx
-      .select('*')
-      .forUpdate()
-      .from(self.tablename)
-      .where(self.sidfieldname, '=', sid)
-      .then((foundKeys) => {
-        if (foundKeys.length === 0) {
-          return trx.from(self.tablename).insert({
-            [self.sidfieldname]: sid,
-            expired: dbDate,
-            sess,
-          });
-        }
-        return trx(self.tablename)
-          .where(self.sidfieldname, '=', sid)
-          .update({
-            expired: dbDate,
-            sess,
-          });
-      })))
-    .asCallback(fn));
-};
+  };
 
-/**
-   * Touch the given session object associated with the given session ID.
-   *
-   * @param {String} sid
-   * @param {Session} sess
-   * @param {Function} fn
-   * @public
-   */
-KnexStore.prototype.touch = (sid, sess, fn) => {
-  if (sess && sess.cookie && sess.cookie.expires) {
-    const condition = expiredCondition(this.knex);
-
-    return resolve(this.knex(this.tablename)
-      .where(this.sidfieldname, '=', sid)
-      .andWhereRaw(condition, dateAsISO(this.knex))
-      .update({
-        expired: dateAsISO(this.knex, sess.cookie.expires),
-      }))
-      .asCallback(fn);
-  }
-
-  fn();
-  return undefined;
-};
-
-/*
-   * Destroy the session associated with the given `sid`.
-   *
-   * @param {String} sid
-   * @api public
-   */
-KnexStore.prototype.destroy = (sid, fn) => {
-  const self = this;
-  return self.ready.then(() => resolve(self.knex
-    .del()
-    .from(self.tablename)
-    .where(self.sidfieldname, '=', sid))
-    .asCallback(fn));
-};
-
-/*
-   * Fetch number of sessions.
-   *
-   * @param {Function} fn
-   * @api public
-   */
-KnexStore.prototype.length = (fn) => {
-  const self = this;
-  return self.ready.then(() => resolve(self.knex
-    .count(`${self.sidfieldname} as count`)
-    .from(self.tablename)
-    .then((response) => response[0].count || 0))
-    .asCallback(fn));
-};
-
-/*
-   * Clear all sessions.
-   *
-   * @param {Function} fn
-   * @api public
-   */
-KnexStore.prototype.clear = (fn) => {
-  const self = this;
-  return self.ready.then(() => resolve(self.knex
-    .del()
-    .from(self.tablename))
-    .asCallback(fn));
-};
-
-/* stop the dbCleanupTimeout */
-KnexStore.prototype.stopDbCleanup = () => {
-  if (KnexStore.nextDbCleanup) {
-    clearTimeout(KnexStore.nextDbCleanup);
-    delete KnexStore.nextDbCleanup;
-  }
-};
-
-module.exports = (connect) => {
   /**
-   * Connect's Store.
-   */
-  Store = connect.session ? connect.session.Store : connect.Store;
+     * Touch the given session object associated with the given session ID.
+     *
+     * @param {String} sid
+     * @param {Session} sess
+     * @param {Function} fn
+     * @public
+     */
+  KnexStore.prototype.touch = (sid, sess, fn) => {
+    if (sess && sess.cookie && sess.cookie.expires) {
+      const condition = expiredCondition(this.knex);
+
+      return resolve(this.knex(this.tablename)
+        .where(this.sidfieldname, '=', sid)
+        .andWhereRaw(condition, dateAsISO(this.knex))
+        .update({
+          expired: dateAsISO(this.knex, sess.cookie.expires),
+        }))
+        .asCallback(fn);
+    }
+
+    fn();
+    return undefined;
+  };
+
+  /*
+     * Destroy the session associated with the given `sid`.
+     *
+     * @param {String} sid
+     * @api public
+     */
+  KnexStore.prototype.destroy = (sid, fn) => {
+    const self = this;
+    return self.ready.then(() => resolve(self.knex
+      .del()
+      .from(self.tablename)
+      .where(self.sidfieldname, '=', sid))
+      .asCallback(fn));
+  };
+
+  /*
+     * Fetch number of sessions.
+     *
+     * @param {Function} fn
+     * @api public
+     */
+  KnexStore.prototype.length = (fn) => {
+    const self = this;
+    return self.ready.then(() => resolve(self.knex
+      .count(`${self.sidfieldname} as count`)
+      .from(self.tablename)
+      .then((response) => response[0].count || 0))
+      .asCallback(fn));
+  };
+
+  /*
+     * Clear all sessions.
+     *
+     * @param {Function} fn
+     * @api public
+     */
+  KnexStore.prototype.clear = (fn) => {
+    const self = this;
+    return self.ready.then(() => resolve(self.knex
+      .del()
+      .from(self.tablename))
+      .asCallback(fn));
+  };
+
+  /* stop the dbCleanupTimeout */
+  KnexStore.prototype.stopDbCleanup = () => {
+    if (KnexStore.nextDbCleanup) {
+      clearTimeout(KnexStore.nextDbCleanup);
+      delete KnexStore.nextDbCleanup;
+    }
+  };
+
   return KnexStore;
 };
