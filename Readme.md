@@ -78,8 +78,62 @@ If a knex instance is not provided, this module will attempt to create a sqlite3
 
 ## Testing
 
-- Install both Postgresql
-- Install Mysql
-- Create a user called `travis` and don't give it a password
-- Make sure both the MySQL and Postgres services are running
-- `npm run test`
+Install Postgresql
+Instructions for Ubuntu after intalling the db:
+
+```bash
+sudo -u postgres psql
+```
+
+```sql
+CREATE DATABASE travis_ci_test OWNER postgres;
+```
+
+```sql
+GRANT all privileges ON DATABASE travis_ci_test TO postgres;
+```
+
+```sql
+ALTER USER postgres WITH PASSWORD 'postgres';
+```
+
+```sql
+\q
+```
+
+Install Mysql
+Instructions for Ubuntu after installing the db:
+
+```bash
+sudo mysql -u root
+```
+
+```sql
+create user 'travis' identified by 'travis';
+```
+
+```sql
+ALTER USER 'travis'@'localhost' IDENTIFIED BY 'travis';
+```
+
+```sql
+create database travis_ci_test;
+```
+
+```sql
+grant all on travis_ci_test.* to 'travis';
+```
+
+```sql
+\q
+```
+
+```bash
+sudo service mysql restart
+```
+
+Make sure both the MySQL and Postgres services are running
+
+```bash
+npm run test
+```

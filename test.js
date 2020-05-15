@@ -11,7 +11,7 @@ const knexPg = require('knex')({
   connection: {
     host: '127.0.0.1',
     user: 'postgres',
-    password: '',
+    password: process.env.ON_TRAVIS ? '' : 'postgres',
     database: 'travis_ci_test',
   },
 });
@@ -20,7 +20,7 @@ const knexMysql = require('knex')({
   connection: {
     host: '127.0.0.1',
     user: 'travis',
-    password: '',
+    password: process.env.ON_TRAVIS ? '' : 'travis',
     database: 'travis_ci_test',
   },
 });
