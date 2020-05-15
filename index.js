@@ -483,7 +483,7 @@ KnexStore.prototype.length = (fn) => {
   return self.ready.then(() => resolve(self.knex
     .count(`${self.sidfieldname} as count`)
     .from(self.tablename)
-    .then((response) => response[0].count | 0))
+    .then((response) => response[0].count || 0))
     .asCallback(fn));
 };
 
