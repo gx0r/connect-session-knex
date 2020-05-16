@@ -1,7 +1,4 @@
 /* eslint-disable func-names */
-/* eslint-disable no-prototype-builtins */
-/* eslint-disable no-param-reassign */
-/* eslint-disable no-nested-ternary */
 
 const Bluebird = require('bluebird');
 const knexFactory = require('knex');
@@ -86,6 +83,7 @@ function dateAsISO(knex, aDate) {
    * @api private
    */
 function timestampTypeName(knex) {
+  // eslint-disable-next-line no-nested-ternary
   return isMySQL(knex) || isMSSQL(knex)
     ? 'DATETIME'
     : isPostgres(knex)
@@ -240,6 +238,7 @@ function dbCleanup(store, interval, KnexStore) {
         .whereRaw(condition, dateAsISO(store.knex));
     })
     .finally(() => {
+      // eslint-disable-next-line no-param-reassign
       KnexStore.nextDbCleanup = setTimeout(
         dbCleanup,
         interval,
@@ -261,18 +260,18 @@ module.exports = function (connect) {
    * @param {Object} options
    * @api public
    */
-  function KnexStore(options) {
+  function KnexStore(options = {}) {
     const self = this;
 
-    options = options || {};
     Store.call(self, options);
 
     if (!options.clearInterval) {
       // Time to run clear expired function.
+      // eslint-disable-next-line no-param-reassign
       options.clearInterval = 60000;
     }
 
-    self.createtable = options.hasOwnProperty('createtable')
+    self.createtable = Object.prototype.hasOwnProperty.call(options, 'creatable')
       ? options.createtable
       : true;
     self.tablename = options.tablename || 'sessions';
@@ -361,12 +360,12 @@ module.exports = function (connect) {
    * @param {Function} fn
    * @api public
    */
-  KnexStore.prototype.set = function (sid, sess, fn) {
+  KnexStore.prototype.set = function (sid, sessObject, fn) {
     const self = this;
-    const { maxAge } = sess.cookie;
+    const { maxAge } = sessObject.cookie;
     const now = new Date().getTime();
     const expired = maxAge ? now + maxAge : now + oneDay;
-    sess = JSON.stringify(sess);
+    const sess = JSON.stringify(sessObject);
 
     const dbDate = dateAsISO(self.knex, expired);
 
