@@ -5,6 +5,7 @@ node_js:
 
 env:
   - CXX=g++-4.8
+  - IN_TRAVIS=1
 
 before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
