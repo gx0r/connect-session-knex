@@ -18,6 +18,10 @@ connect-session-knex is an [express-session](https://github.com/expressjs/sessio
 $ npm install connect-session-knex
 ```
 
+## History
+
+See [Changelog.md](Changelog.md)
+
 ## Usage
 
 [Example application using the defaults](https://github.com/llambda/connect-session-knex/blob/master/example.js)
