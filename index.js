@@ -244,6 +244,7 @@ function dbCleanup(store, interval, KnexStore) {
         interval,
         store,
         interval,
+        KnexStore,
       ).unref();
     });
 }
