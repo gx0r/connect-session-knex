@@ -24,9 +24,9 @@ See [Changelog.md](Changelog.md)
 
 ## Usage
 
-[Example application using the defaults](https://github.com/llambda/connect-session-knex/blob/master/example.js)
+[Example application using the defaults](https://github.com/llambda/connect-session-knex/blob/master/examples/example.js)
 
-[Example application with PostgreSQL](https://github.com/llambda/connect-session-knex/blob/master/example-postgres.js)
+[Example application with PostgreSQL](https://github.com/llambda/connect-session-knex/blob/master/examples/example-postgres.js)
 
 [With Express 3 or Connect](https://github.com/llambda/connect-session-knex/blob/master/Oldversions.md)
 
