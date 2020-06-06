@@ -2,13 +2,14 @@
   "name": "connect-session-knex",
   "description": "A knex.js session store for Express and Connect",
   "version": "1.7.0",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "typings": "typings/index.d.ts",
   "engines": {
     "node": ">=8"
   },
   "files": [
-    "index.js",
-    "index.d.ts"
+    "lib/**/*",
+    "typings/**/*"
   ],
   "repository": {
     "type": "git",
@@ -19,7 +20,7 @@
   },
   "homepage": "https://github.com/llambda/connect-session-knex",
   "scripts": {
-    "test": "node test.js"
+    "test": "node tests/index.js"
   },
   "license": "ISC",
   "dependencies": {
