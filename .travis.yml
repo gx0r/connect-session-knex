@@ -4,19 +4,13 @@ node_js:
   - "12"
 
 env:
-  - CXX=g++-4.8
-  - IN_TRAVIS=1
+  - IN_TRAVIS=yes
 
 before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
   - mysql -e 'create database travis_ci_test;'
 
 addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - g++-4.8
   postgresql: "9.4"
 
 services:
