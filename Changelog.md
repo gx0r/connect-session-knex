@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog and this project adheres to Semantic Versioning.
 
+**1.7.3**
+- Bug fix: https://github.com/llambda/connect-session-knex/pull/68
+
 **1.7.2**
 
 - Bug fix: fixed a typo. 'creatable' -> 'createtable'
