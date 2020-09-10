@@ -6,7 +6,7 @@ declare module 'connect-session-knex' {
         tablename?: string;
         sidfieldname?: string;
         knex?: Knex;
-        createTable?: boolean;
+        createtable?: boolean;
         clearInterval?: number;
     };
 

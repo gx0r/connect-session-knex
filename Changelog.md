@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog and this project adheres to Semantic Versioning.
 
+**2.0.0**
+- Bug fix: https://github.com/llambda/connect-session-knex/pull/73 (As this fix is a typing change, a major version was incremented)
+
 **1.7.3**
 - Bug fix: https://github.com/llambda/connect-session-knex/pull/68
 
