@@ -26,7 +26,6 @@ const knexMysql = require('knex')({
 });
 const KnexStore = require('../lib')(session);
 
-
 const stores = [];
 stores.push(
   new KnexStore({
