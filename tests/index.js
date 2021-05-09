@@ -214,6 +214,42 @@ stores.forEach((store) => {
       });
   });
 
+  test('retrieve all', (t) => {
+    t.plan(6);
+    t.timeoutAfter(2000);
+
+    const session1 = {
+      cookie: {
+        maxAge: 20000,
+        expires: new Date(),
+      },
+      name: 'retrieve-all session 1',
+    };
+
+    const session2 = {
+      cookie: {
+        maxAge: 20000,
+        expires: new Date(),
+      },
+      name: 'retrieve-all session 2',
+    };
+
+    return store
+      .clear()
+      .then(() => store.set('123412341234', session1, (err) => t.error(err)))
+      .then(() => store.set('432143214321', session2, (err) => t.error(err)))
+      .then(() => store.all((err, sessions) => {
+        t.error(err);
+        t.equal(sessions.length, 2);
+        sessions.forEach((session) => {
+          // eslint-disable-next-line no-param-reassign
+          session.cookie.expires = new Date(session.cookie.expires);
+        });
+        t.deepLooseEqual(sessions.find((s) => s.name === session1.name), session1);
+        t.deepLooseEqual(sessions.find((s) => s.name === session2.name), session2);
+      }));
+  });
+
   test('cleanup', (t) => {
     store.knex.destroy().then(t.end);
   });
