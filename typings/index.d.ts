@@ -8,6 +8,7 @@ declare module 'connect-session-knex' {
         knex?: Knex;
         createtable?: boolean;
         clearInterval?: number;
+        disableDbCleanup?: boolean;
     };
 
     interface StoreFactory {
