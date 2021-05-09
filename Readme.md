@@ -84,6 +84,7 @@ If a knex instance is not provided, this module will attempt to create a sqlite3
 ## Testing
 
 Install Postgresql
+
 Instructions for Ubuntu after intalling the db:
 
 ```bash
@@ -107,6 +108,7 @@ ALTER USER postgres WITH PASSWORD 'postgres';
 ```
 
 Install Mysql
+
 Instructions for Ubuntu after installing the db:
 
 ```bash
