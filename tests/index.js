@@ -26,22 +26,24 @@ const knexMysql = require('knex')({
 });
 const KnexStore = require('../lib')(session);
 
-
 const stores = [];
 stores.push(
   new KnexStore({
     db: ':memory:',
     dir: 'dbs',
+    disableDbCleanup: true,
   }),
 );
 stores.push(
   new KnexStore({
     knex: knexPg,
+    disableDbCleanup: true,
   }),
 );
 stores.push(
   new KnexStore({
     knex: knexMysql,
+    disableDbCleanup: true,
   }),
 );
 
@@ -250,6 +252,10 @@ stores.forEach((store) => {
       }));
   });
 
+  test('no cleanup timeout when disableDbCleanup is true', (t) => {
+    t.equal(store.getNextDbCleanup(), null);
+    t.end();
+  });
   test('cleanup', (t) => {
     store.knex.destroy().then(t.end);
   });

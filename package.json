@@ -20,7 +20,9 @@
   },
   "homepage": "https://github.com/llambda/connect-session-knex",
   "scripts": {
-    "test": "node tests/index.js"
+    "test": "node tests/index.js",
+    "lint": "eslint lib/ tests/",
+    "lint-fix": "eslint --fix lib/ tests"
   },
   "license": "ISC",
   "dependencies": {

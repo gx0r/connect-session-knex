@@ -37,6 +37,7 @@ See [Changelog.md](Changelog.md)
  - `knex` knex instance to use. Defaults to a new knex instance, using sqlite3 with a file named 'connect-session-knex.sqlite'
  - `createtable` if the table for sessions should be created automatically or not.
  - `clearInterval` milliseconds between clearing expired sessions. Defaults to 60000.
+ - `disableDbCleanup` disables the automatic clearing of expired sessions. Defaults to false. 
 
 If the table does not exist in the schema, this module will attempt to create it unless the 'createtable' option is false.
 
