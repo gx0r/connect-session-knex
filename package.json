@@ -13,12 +13,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:llambda/connect-session-knex.git"
+    "url": "git@github.com:gx0r/connect-session-knex.git"
   },
   "bugs": {
-    "url": "https://github.com/llambda/connect-session-knex/issues"
+    "url": "https://github.com/gx0r/connect-session-knex/issues"
   },
-  "homepage": "https://github.com/llambda/connect-session-knex",
+  "homepage": "https://github.com/gx0r/connect-session-knex",
   "scripts": {
     "test": "node tests/index.js",
     "lint": "eslint lib/ tests/",
