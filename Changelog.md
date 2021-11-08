@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog and this project adheres to Semantic Versioning.
 
+**2.1.1**
+- [Updated for compatability with Knex 0.95.0+](https://github.com/gx0r/connect-session-knex/pull/82)
+- [Fix default export in typings](https://github.com/gx0r/connect-session-knex/pull/89)
+
 **2.1.0**
 - [Add disableDbCleanup option](https://github.com/gx0r/connect-session-knex/pull/78)
 - [Add Postgres support for case sensitive custom tablename](https://github.com/gx0r/connect-session-knex/pull/79)
