@@ -24,11 +24,11 @@ See [Changelog.md](Changelog.md)
 
 ## Usage
 
-[Example application using the defaults](https://github.com/llambda/connect-session-knex/blob/master/examples/example.js)
+[Example application using the defaults](https://github.com/gx0r/connect-session-knex/blob/master/examples/example.js)
 
-[Example application with PostgreSQL](https://github.com/llambda/connect-session-knex/blob/master/examples/example-postgres.js)
+[Example application with PostgreSQL](https://github.com/gx0r/connect-session-knex/blob/master/examples/example-postgres.js)
 
-[With Express 3 or Connect](https://github.com/llambda/connect-session-knex/blob/master/Oldversions.md)
+[With Express 3 or Connect](https://github.com/gx0r/connect-session-knex/blob/master/Oldversions.md)
 
 ## Options
 
@@ -62,7 +62,7 @@ If a knex instance is not provided, this module will attempt to create a sqlite3
 
 ## Benchmarks
 
-[https://github.com/llambda/express-session-benchmarks](https://github.com/llambda/express-session-benchmarks)
+[https://github.com/gx0r/express-session-benchmarks](https://github.com/gx0r/express-session-benchmarks)
 
 [npm-version-image]: https://img.shields.io/npm/v/connect-session-knex.svg
 [npm-downloads-image]: https://img.shields.io/npm/dm/connect-session-knex.svg
