@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog and this project adheres to Semantic Versioning.
 
+
+**3.0.0**
+- Knex 2.0.0
+
 **2.1.2**
 - [bump knex to 1.0.2](https://github.com/gx0r/connect-session-knex/pull/95)
 
