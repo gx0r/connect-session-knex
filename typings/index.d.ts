@@ -1,11 +1,11 @@
-import Knex from 'knex';
+import knex from 'knex';
 import expressSession, { Store } from 'express-session';
 
 declare module 'connect-session-knex' {
     type ConfigType = {
       tablename?: string;
       sidfieldname?: string;
-      knex?: Knex;
+      knex?: knex;
       createtable?: boolean;
       clearInterval?: number;
       disableDbCleanup?: boolean;
