@@ -1,11 +1,11 @@
-import knex from 'knex';
+import { Knex } from 'knex';
 import expressSession, { Store } from 'express-session';
 
 declare module 'connect-session-knex' {
     type ConfigType = {
       tablename?: string;
       sidfieldname?: string;
-      knex?: knex;
+      knex?: Knex;
       createtable?: boolean;
       clearInterval?: number;
       disableDbCleanup?: boolean;
@@ -15,7 +15,6 @@ declare module 'connect-session-knex' {
     interface StoreFactory {
         new (configs?: ConfigType): Store;
     }
-
-    function initFunction(session: typeof expressSession): StoreFactory;
-    export = initFunction;
 }
+
+export default function initFunction(session: typeof expressSession): StoreFactory;
