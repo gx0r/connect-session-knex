@@ -15,6 +15,6 @@ declare module 'connect-session-knex' {
     interface StoreFactory {
         new (configs?: ConfigType): Store;
     }
-
-    function initFunction(session: typeof expressSession): StoreFactory;
 }
+
+export default function initFunction(session: typeof expressSession): StoreFactory;
