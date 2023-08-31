@@ -56,6 +56,26 @@ If a knex instance is not provided, this module will attempt to create a sqlite3
     "sessions_expired_index" btree (expired)
 ```
 
+### MySQL
+
+Table Name `sessions`.
+
+| Column  |           Type           |   Modifiers  |
+|---------|:------------------------:|:------------:|
+| sid     | VARCHAR(255)             | NOT NULL, PK |
+| sess    | JSON                     | NOT NULL     |
+| expired | DATETIME                 | NOT NULL     |
+
+Command to manually create table:
+
+```sql
+CREATE TABLE `sessions` (
+  `sid` VARCHAR(255) NOT NULL,
+  `sess` JSON NOT NULL,
+  `expired` DATETIME NOT NULL,
+  PRIMARY KEY (`sid`));
+```  
+
 ## Benchmarks
 
 [https://github.com/gx0r/express-session-benchmarks](https://github.com/gx0r/express-session-benchmarks)
