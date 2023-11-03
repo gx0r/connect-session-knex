@@ -27,7 +27,7 @@
   "license": "ISC",
   "dependencies": {
     "bluebird": "^3.7.2",
-    "knex": "^2.3.0"
+    "knex": "3"
   },
   "devDependencies": {
     "eslint": "^8.26.0",
