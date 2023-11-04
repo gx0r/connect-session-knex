@@ -1,9 +1,4 @@
 /* eslint-disable no-shadow */
-
-const Promise = require('bluebird');
-
-Promise.longStackTraces();
-
 const test = require('tape');
 const session = require('express-session');
 const knexPg = require('knex')({
