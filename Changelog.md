@@ -6,6 +6,10 @@ The format is based on Keep a Changelog and this project adheres to Semantic Ver
 
 ## 4.0.1
 
+- Revert drop Bluebird
+
+## 4.0.1
+
 - Improve typings
 
 ## 4.0.0
