@@ -26,7 +26,7 @@
   },
   "license": "ISC",
   "dependencies": {
-    "ascallback": "^1.1.1",
+    "bluebird": "^3.7.2",
     "knex": "3"
   },
   "devDependencies": {
