@@ -1,28 +1,12 @@
-const test = require("node:test");
-const assert = require("node:assert");
+import test from "node:test";
+import assert from "node:assert";
+import session from "express-session";
+import ConnectSessionKnex from "../lib/index.mjs";
 
-const session = require("express-session");
-const knexPg = require("knex")({
-  client: "pg",
-  connection: {
-    host: "127.0.0.1",
-    user: "postgres",
-    password: process.env.IN_TRAVIS === "yes" ? "" : "postgres",
-    database: "travis_ci_test",
-  },
-});
-const knexMysql = require("knex")({
-  client: "mysql",
-  connection: {
-    host: "127.0.0.1",
-    user: "travis",
-    password: process.env.IN_TRAVIS === "yes" ? "" : "travis",
-    database: "travis_ci_test",
-  },
-});
-const KnexStore = require("../lib")(session);
+const KnexStore = ConnectSessionKnex(session);
 
 const stores = [];
+
 stores.push(
   new KnexStore({
     db: ":memory:",
@@ -32,16 +16,32 @@ stores.push(
 );
 
 // Uncomment to test additional stores
-
 // stores.push(
 //   new KnexStore({
-//     knex: knexPg,
+//     knex: knex({
+//       client: "pg",
+//       connection: {
+//         host: "127.0.0.1",
+//         user: "postgres",
+//         password: process.env.IN_TRAVIS === "yes" ? "" : "postgres",
+//         database: "travis_ci_test",
+//       },
+//     }),
 //     disableDbCleanup: true,
 //   }),
 // );
+
 // stores.push(
 //   new KnexStore({
-//     knex: knexMysql,
+//     knex: knex({
+//       client: "mysql",
+//       connection: {
+//         host: "127.0.0.1",
+//         user: "travis",
+//         password: process.env.IN_TRAVIS === "yes" ? "" : "travis",
+//         database: "travis_ci_test",
+//       },
+//     }),
 //     disableDbCleanup: true,
 //   }),
 // );

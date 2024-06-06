@@ -7,10 +7,7 @@
   "engines": {
     "node": ">=18"
   },
-  "files": [
-    "lib/**/*",
-    "typings/**/*"
-  ],
+  "files": ["lib/**/*", "typings/**/*"],
   "repository": {
     "type": "git",
     "url": "git@github.com:gx0r/connect-session-knex.git"
@@ -20,7 +17,7 @@
   },
   "homepage": "https://github.com/gx0r/connect-session-knex",
   "scripts": {
-    "test": "node tests/index.js",
+    "test": "node --test tests/index.mjs",
     "lint": "eslint lib/ tests/",
     "lint-fix": "eslint --fix lib/ tests"
   },
