@@ -77,10 +77,6 @@ CREATE TABLE `sessions` (
   PRIMARY KEY (`sid`));
 ```
 
-## Benchmarks
-
-[https://github.com/gx0r/express-session-benchmarks](https://github.com/gx0r/express-session-benchmarks)
-
 [npm-version-image]: https://img.shields.io/npm/v/connect-session-knex.svg
 [npm-downloads-image]: https://img.shields.io/npm/dm/connect-session-knex.svg
 [npm-image]: https://nodei.co/npm/connect-session-knex.png?downloads=true&downloadRank=true&stars=true

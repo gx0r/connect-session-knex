@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog and this project adheres to Semantic Versioning.
 
+## 5.0.0
+
+- Updated code for modern Node 18+
+- async/await
+- eslint
+- prettier
+- Node test runner
+
 ## 4.0.2
 
 - Revert drop Bluebird
