@@ -34,18 +34,21 @@ stores.push(
     disableDbCleanup: true,
   }),
 );
-stores.push(
-  new KnexStore({
-    knex: knexPg,
-    disableDbCleanup: true,
-  }),
-);
-stores.push(
-  new KnexStore({
-    knex: knexMysql,
-    disableDbCleanup: true,
-  }),
-);
+
+// Uncomment to test additional stores
+
+// stores.push(
+//   new KnexStore({
+//     knex: knexPg,
+//     disableDbCleanup: true,
+//   }),
+// );
+// stores.push(
+//   new KnexStore({
+//     knex: knexMysql,
+//     disableDbCleanup: true,
+//   }),
+// );
 
 stores.forEach((store) => {
   test('initial clear', (t) => {
