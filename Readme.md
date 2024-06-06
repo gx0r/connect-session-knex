@@ -1,6 +1,5 @@
 # Connect Session Knex
 
-
 [![NPM Version][npm-version-image]][npm-url]
 [![NPM Downloads][npm-downloads-image]][npm-url]
 [![Node.js Version][node-image]][node-url]
@@ -28,12 +27,12 @@ See [Changelog.md](Changelog.md)
 
 ## Options
 
- - `tablename='sessions'` Tablename to use. Defaults to 'sessions'.
- - `sidfieldname='sid'` Field name in table to use for storing session ids. Defaults to 'sid'.
- - `knex` knex instance to use. Defaults to a new knex instance, using sqlite3 with a file named 'connect-session-knex.sqlite'
- - `createtable` if the table for sessions should be created automatically or not.
- - `clearInterval` milliseconds between clearing expired sessions. Defaults to 60000.
- - `disableDbCleanup` disables the automatic clearing of expired sessions. Defaults to false. 
+- `tablename='sessions'` Tablename to use. Defaults to 'sessions'.
+- `sidfieldname='sid'` Field name in table to use for storing session ids. Defaults to 'sid'.
+- `knex` knex instance to use. Defaults to a new knex instance, using sqlite3 with a file named 'connect-session-knex.sqlite'
+- `createtable` if the table for sessions should be created automatically or not.
+- `clearInterval` milliseconds between clearing expired sessions. Defaults to 60000.
+- `disableDbCleanup` disables the automatic clearing of expired sessions. Defaults to false.
 
 If the table does not exist in the schema, this module will attempt to create it unless the 'createtable' option is false.
 
@@ -43,16 +42,18 @@ If a knex instance is not provided, this module will attempt to create a sqlite3
 
 ### PostgreSQL or SQLite
 
-#### Table Name "sessions"  
-| Column  |           Type           | Modifiers | Storage  | 
-|---------|:------------------------:|:---------:|:--------:|
-| sid     | character varying(255)   | not null  | extended |
-| sess    | json                     | not null  | extended |
-| expired | timestamp with time zone | not null  | plain    |  
+#### Table Name "sessions"
+
+| Column  |           Type           | Modifiers | Storage  |
+| ------- | :----------------------: | :-------: | :------: |
+| sid     |  character varying(255)  | not null  | extended |
+| sess    |           json           | not null  | extended |
+| expired | timestamp with time zone | not null  |  plain   |
 
 ### Indexes:
-```  
-    "sessions_pkey" PRIMARY KEY, btree (sid)  
+
+```
+    "sessions_pkey" PRIMARY KEY, btree (sid)
     "sessions_expired_index" btree (expired)
 ```
 
@@ -60,11 +61,11 @@ If a knex instance is not provided, this module will attempt to create a sqlite3
 
 Table Name `sessions`.
 
-| Column  |           Type           |   Modifiers  |
-|---------|:------------------------:|:------------:|
-| sid     | VARCHAR(255)             | NOT NULL, PK |
-| sess    | JSON                     | NOT NULL     |
-| expired | DATETIME                 | NOT NULL     |
+| Column  |     Type     |  Modifiers   |
+| ------- | :----------: | :----------: |
+| sid     | VARCHAR(255) | NOT NULL, PK |
+| sess    |     JSON     |   NOT NULL   |
+| expired |   DATETIME   |   NOT NULL   |
 
 Command to manually create table:
 
@@ -74,7 +75,7 @@ CREATE TABLE `sessions` (
   `sess` JSON NOT NULL,
   `expired` DATETIME NOT NULL,
   PRIMARY KEY (`sid`));
-```  
+```
 
 ## Benchmarks
 
