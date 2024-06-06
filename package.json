@@ -18,9 +18,9 @@
   "homepage": "https://github.com/gx0r/connect-session-knex",
   "scripts": {
     "example": "node examples/example-mjs.mjs",
-    "test": "node --test tests/index.mjs",
-    "lint": "eslint lib/ tests/",
-    "lint-fix": "eslint --fix lib/ tests"
+    "test": "node --test",
+    "lint": "eslint lib/ test/",
+    "lint-fix": "eslint --fix lib/ test/"
   },
   "license": "ISC",
   "dependencies": {
