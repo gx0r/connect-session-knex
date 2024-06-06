@@ -26,7 +26,7 @@ stores.push(
     db: ":memory:",
     dir: "dbs",
     disableDbCleanup: true,
-  })
+  }),
 );
 
 // Uncomment to test additional stores
@@ -124,7 +124,7 @@ stores.forEach((store) => {
             t.equal(len, 0);
           });
         });
-      }
+      },
     );
   });
 
@@ -143,7 +143,7 @@ stores.forEach((store) => {
           t.equal(rows.rowCount, 1, "row count");
         }
         t.end();
-      }
+      },
     );
   });
 
@@ -191,7 +191,7 @@ stores.forEach((store) => {
             maxAge: 20000,
           },
           name: "sample name",
-        })
+        }),
       )
       .then(() => {
         store.touch(
@@ -210,7 +210,7 @@ stores.forEach((store) => {
               t.error(err, "error");
               t.equal(len, 1);
             });
-          }
+          },
         );
       });
   });
@@ -248,13 +248,13 @@ stores.forEach((store) => {
           });
           t.deepLooseEqual(
             sessions.find((s) => s.name === session1.name),
-            session1
+            session1,
           );
           t.deepLooseEqual(
             sessions.find((s) => s.name === session2.name),
-            session2
+            session2,
           );
-        })
+        }),
       );
   });
 

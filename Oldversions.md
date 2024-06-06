@@ -3,16 +3,18 @@
 With Express 3:
 
 ```js
-var express = require('express')
-var KnexSessionStore = require('connect-session-knex')(express);
+var express = require("express");
+var KnexSessionStore = require("connect-session-knex")(express);
 var store = new KnexSessionStore(/* options here */);
 
-app.configure(function() {
-  app.use(express.session({
-    store: store,
-    secret: 'your secret',
-    cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 1 week
-  }));
+app.configure(function () {
+  app.use(
+    express.session({
+      store: store,
+      secret: "your secret",
+      cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 }, // 1 week
+    }),
+  );
 });
 ```
 
