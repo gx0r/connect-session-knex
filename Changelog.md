@@ -7,10 +7,13 @@ The format is based on Keep a Changelog and this project adheres to Semantic Ver
 ## 5.0.0
 
 - Updated code for modern Node 18+
+- Class syntax instead of prototype
 - async/await
 - eslint
 - prettier
 - Node test runner
+- ES Modules (.mjs)
+- ES Module example
 
 ## 4.0.2
 
