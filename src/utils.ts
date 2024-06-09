@@ -1,10 +1,13 @@
-export const isSqlite3 = (knex) => knex.client.dialect === "sqlite3";
-export const isMySQL = (knex) =>
+import { Knex } from "knex";
+
+export const isSqlite3 = (knex: Knex) => knex.client.dialect === "sqlite3";
+export const isMySQL = (knex: Knex) =>
   ["mysql", "mariasql", "mariadb"].indexOf(knex.client.dialect) > -1;
-export const isMSSQL = (knex) => ["mssql"].indexOf(knex.client.dialect) > -1;
-export const isPostgres = (knex) =>
+export const isMSSQL = (knex: Knex) =>
+  ["mssql"].indexOf(knex.client.dialect) > -1;
+export const isPostgres = (knex: Knex) =>
   ["postgresql"].indexOf(knex.client.dialect) > -1;
-export const isOracle = (knex) =>
+export const isOracle = (knex: Knex) =>
   ["oracle", "oracledb"].indexOf(knex.client.dialect) > -1;
 
 /*
@@ -12,7 +15,7 @@ export const isOracle = (knex) =>
  * @return {bool}
  * @api private
  */
-export async function isDbSupportJSON(knex) {
+export async function isDbSupportJSON(knex: Knex) {
   if (isMSSQL(knex)) return false;
   if (!isMySQL(knex)) return true;
   const data = await knex.raw("select version() as version");
@@ -23,7 +26,7 @@ export async function isDbSupportJSON(knex) {
     +extractedVersions[0] > 5 ||
     (extractedVersions[0] === "5" &&
       (+extractedVersions[1] > 7 ||
-        (+extractedVersions[1] === "7" && +extractedVersions[2] >= 8)))
+        (+extractedVersions[1] === 7 && +extractedVersions[2] >= 8)))
   );
 }
 
@@ -32,13 +35,24 @@ export async function isDbSupportJSON(knex) {
  * @api private
  * @return {String | date}
  */
-export function dateAsISO(knex, aDate) {
+export function dateAsISO(
+  knex: Knex,
+  aDate?: number | string | Date,
+): string | Date {
   let date;
-  if (aDate != null) {
-    date = new Date(aDate);
-  } else {
+
+  if (aDate == null) {
     date = new Date();
+  } else {
+    if (typeof aDate === "number") {
+      date = new Date(aDate);
+    } else if (typeof aDate === "string") {
+      date = new Date(aDate);
+    } else {
+      date = aDate;
+    }
   }
+
   if (isOracle(knex)) {
     return date;
   }
@@ -52,7 +66,7 @@ export function dateAsISO(knex, aDate) {
  * @return {string}
  * @api private
  */
-export function getPostgresFastQuery(tablename, sidfieldname) {
+export function getPostgresFastQuery(tablename: string, sidfieldname: string) {
   return (
     `with new_values (${sidfieldname}, expired, sess) as (` +
     "  values (?, ?::timestamp with time zone, ?::json)" +
@@ -79,7 +93,7 @@ export function getPostgresFastQuery(tablename, sidfieldname) {
  * @return {string}
  * @api private
  */
-export function getSqliteFastQuery(tablename, sidfieldname) {
+export function getSqliteFastQuery(tablename: string, sidfieldname: string) {
   return `insert or replace into ${tablename} (${sidfieldname}, expired, sess) values (?, ?, ?);`;
 }
 
@@ -88,7 +102,7 @@ export function getSqliteFastQuery(tablename, sidfieldname) {
  * @return {string}
  * @api private
  */
-export function getMysqlFastQuery(tablename, sidfieldname) {
+export function getMysqlFastQuery(tablename: string, sidfieldname: string) {
   return `insert into ${tablename} (${sidfieldname}, expired, sess) values (?, ?, ?) on duplicate key update expired=values(expired), sess=values(sess);`;
 }
 
@@ -97,7 +111,7 @@ export function getMysqlFastQuery(tablename, sidfieldname) {
  * @return {string}
  * @api private
  */
-export function getMssqlFastQuery(tablename, sidfieldname) {
+export function getMssqlFastQuery(tablename: string, sidfieldname: string) {
   return (
     `merge ${tablename} as T ` +
     `using (values (?, ?, ?)) as S (${sidfieldname}, expired, sess) ` +
@@ -115,7 +129,7 @@ export function getMssqlFastQuery(tablename, sidfieldname) {
  * @return {String} type name for timestamp
  * @api private
  */
-export function timestampTypeName(knex) {
+export function timestampTypeName(knex: Knex) {
   return isMySQL(knex) || isMSSQL(knex)
     ? "DATETIME"
     : isPostgres(knex)
@@ -128,7 +142,7 @@ export function timestampTypeName(knex) {
  * @return {String} expired sql condition string
  * @api private
  */
-export function expiredCondition(knex) {
+export function expiredCondition(knex: Knex) {
   let condition = `CAST(? as ${timestampTypeName(knex)}) <= expired`;
   if (isSqlite3(knex)) {
     // sqlite3 date condition is a special case.

@@ -1,6 +1,6 @@
 import express from "express";
 import session from "express-session";
-import { ConnectSessionKnexStore } from "../lib/index.mjs";
+import { ConnectSessionKnexStore } from "../dist/index.js";
 import Knex from "knex";
 
 const app = express(); // Express 4

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert";
 import knex from "knex";
-import { ConnectSessionKnexStore } from "../lib/index.mjs";
+import { ConnectSessionKnexStore } from "../dist/index.js";
 
 const stores = [];
 
