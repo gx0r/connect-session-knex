@@ -19,11 +19,9 @@ See [Changelog.md](Changelog.md)
 
 ## Usage
 
-[Example application using the defaults](https://github.com/gx0r/connect-session-knex/blob/master/examples/example.js)
+[Example application using the defaults](https://github.com/gx0r/connect-session-knex/blob/master/examples/example-mjs.mjs)
 
-[Example application with PostgreSQL](https://github.com/gx0r/connect-session-knex/blob/master/examples/example-postgres.js)
-
-[With Express 3 or Connect](https://github.com/gx0r/connect-session-knex/blob/master/Oldversions.md)
+[Example application with PostgreSQL](https://github.com/gx0r/connect-session-knex/blob/master/examples/example-postgres.mjs)
 
 ## Options
 
