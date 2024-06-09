@@ -26,9 +26,9 @@ interface Options {
   sidfieldname: string;
 }
 
-export class ConnectSessionKnexStore extends Store {
-  ONE_DAY = 86400000;
+const ONE_DAY = 86400000;
 
+export class ConnectSessionKnexStore extends Store {
   clearInterval = 60000;
   createtable = true;
   disableDbCleanup = false;
@@ -143,7 +143,7 @@ export class ConnectSessionKnexStore extends Store {
     const self = this;
     const { maxAge } = session.cookie;
     const now = new Date().getTime();
-    const expired = maxAge ? now + maxAge : now + this.ONE_DAY;
+    const expired = maxAge ? now + maxAge : now + ONE_DAY;
     const sess = JSON.stringify(session);
 
     const dbDate = dateAsISO(self.knex, expired);
