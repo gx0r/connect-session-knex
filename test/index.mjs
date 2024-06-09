@@ -1,23 +1,26 @@
 import test from "node:test";
 import assert from "node:assert";
-import session from "express-session";
-import ConnectSessionKnex from "../lib/index.mjs";
-
-const KnexStore = ConnectSessionKnex(session);
+import knex from "knex";
+import { ConnectSessionKnexStore } from "../lib/index.mjs";
 
 const stores = [];
 
 stores.push(
-  new KnexStore({
-    db: ":memory:",
-    dir: "dbs",
+  new ConnectSessionKnexStore({
     disableDbCleanup: true,
+    knex: knex({
+      client: "sqlite",
+      connection: ":memory:",
+      // connection: {
+      //   filename: "connect-session-knex.sqlite",
+      // },
+    }),
   }),
 );
 
 // Uncomment to test additional stores
 // stores.push(
-//   new KnexStore({
+//   new ConnectSessionKnexStore({
 //     knex: knex({
 //       client: "pg",
 //       connection: {
@@ -32,7 +35,7 @@ stores.push(
 // );
 
 // stores.push(
-//   new KnexStore({
+//   new ConnectSessionKnexStore({
 //     knex: knex({
 //       client: "mysql",
 //       connection: {

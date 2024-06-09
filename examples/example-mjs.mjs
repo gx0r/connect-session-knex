@@ -1,10 +1,19 @@
 import express from "express";
 import session from "express-session";
-import ConnectSessionKnex from "../lib/index.mjs";
-const ConnectSessionKnexStore = ConnectSessionKnex(session);
+import { ConnectSessionKnexStore } from "../lib/index.mjs";
+import knex from "knex";
 
 const app = express(); // Express 4
-const store = new ConnectSessionKnexStore(/* options here */); // defaults to a sqlite3 database
+const store = new ConnectSessionKnexStore({
+  knex: knex({
+    client: "sqlite",
+    // connection: ":memory:",
+    connection: {
+      filename: "connect-session-knex.sqlite",
+    },
+  }),
+  disableDbCleanup: true,
+});
 
 app.use(
   session({
