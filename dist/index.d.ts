@@ -11,6 +11,7 @@ interface Options {
     sidfieldname: string;
 }
 export declare class ConnectSessionKnexStore extends Store {
+    ONE_DAY: number;
     clearInterval: number;
     createtable: boolean;
     disableDbCleanup: boolean;
