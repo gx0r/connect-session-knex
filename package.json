@@ -7,7 +7,9 @@
   "engines": {
     "node": ">=18"
   },
-  "files": ["dist/**/*"],
+  "files": [
+    "dist/**/*"
+  ],
   "repository": {
     "type": "git",
     "url": "git@github.com:gx0r/connect-session-knex.git"
@@ -32,7 +34,9 @@
     "@types/express": "^4.17.21",
     "@types/express-session": "^1.18.0",
     "@types/node": "^20.14.2",
-    "eslint": "^9.4.0",
+    "@typescript-eslint/eslint-plugin": "^7.12.0",
+    "@typescript-eslint/parser": "^7.12.0",
+    "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "express": "^4.18.2",
     "express-session": "^1.18.0",
