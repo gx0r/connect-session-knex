@@ -24,7 +24,7 @@ export declare class ConnectSessionKnexStore extends Store {
     set(sid: string, session: SessionData, callback?: (err?: any) => void): Promise<any>;
     touch?(sid: string, session: SessionData, callback?: () => void): Promise<number | null>;
     destroy(sid: string, callback?: (err?: any) => void): Promise<number>;
-    length(callback: (err: any, length?: number) => void): Promise<any>;
+    length(callback: (err: any, length?: number) => void): Promise<number | undefined>;
     clear(callback?: (err?: any) => void): Promise<number>;
     all(callback: (err: any, obj?: SessionData[] | {
         [sid: string]: SessionData;

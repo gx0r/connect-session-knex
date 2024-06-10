@@ -7,7 +7,6 @@ exports.ConnectSessionKnexStore = void 0;
 const knex_1 = __importDefault(require("knex"));
 const express_session_1 = require("express-session");
 const utils_1 = require("./utils");
-const ONE_DAY = 86400000;
 class ConnectSessionKnexStore extends express_session_1.Store {
     clearInterval = 60000;
     createtable = true;
@@ -104,7 +103,7 @@ class ConnectSessionKnexStore extends express_session_1.Store {
         const self = this;
         const { maxAge } = session.cookie;
         const now = new Date().getTime();
-        const expired = maxAge ? now + maxAge : now + ONE_DAY;
+        const expired = maxAge ? now + maxAge : now + 86400000; // 86400000 = add one day
         const sess = JSON.stringify(session);
         const dbDate = (0, utils_1.dateAsISO)(self.knex, expired);
         try {
@@ -126,27 +125,28 @@ class ConnectSessionKnexStore extends express_session_1.Store {
                 retVal = await self.knex.raw((0, utils_1.getMssqlFastQuery)(self.tablename, self.sidfieldname), [sid, dbDate, sess]);
             }
             else {
-                retVal = await self.knex.transaction((trx) => trx
-                    .select("*")
-                    .forUpdate()
-                    .from(self.tablename)
-                    .where(self.sidfieldname, "=", sid)
-                    .then((foundKeys) => {
-                    console.log(foundKeys);
+                retVal = await self.knex.transaction(async (trx) => {
+                    const foundKeys = await trx
+                        .select("*")
+                        .forUpdate()
+                        .from(self.tablename)
+                        .where(self.sidfieldname, "=", sid);
                     if (foundKeys.length === 0) {
-                        return trx.from(self.tablename).insert({
+                        await trx.from(self.tablename).insert({
                             [self.sidfieldname]: sid,
                             expired: dbDate,
                             sess,
                         });
                     }
-                    return trx(self.tablename)
-                        .where(self.sidfieldname, "=", sid)
-                        .update({
-                        expired: dbDate,
-                        sess,
-                    });
-                }));
+                    else {
+                        await trx(self.tablename)
+                            .where(self.sidfieldname, "=", sid)
+                            .update({
+                            expired: dbDate,
+                            sess,
+                        });
+                    }
+                });
             }
             callback?.(null);
             return retVal;
@@ -188,10 +188,13 @@ class ConnectSessionKnexStore extends express_session_1.Store {
     async length(callback) {
         await this.ready;
         try {
+            let retVal;
             const response = await this.knex
                 .count(`${this.sidfieldname} as count`)
                 .from(this.tablename);
-            const retVal = response[0].count ?? 0;
+            if (response.length === 1 && "count" in response[0]) {
+                retVal = +(response[0].count ?? 0);
+            }
             callback?.(null, retVal);
             return retVal;
         }

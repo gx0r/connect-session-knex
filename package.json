@@ -7,9 +7,7 @@
   "engines": {
     "node": ">=18"
   },
-  "files": [
-    "dist/**/*"
-  ],
+  "files": ["dist/**/*"],
   "repository": {
     "type": "git",
     "url": "git@github.com:gx0r/connect-session-knex.git"
@@ -19,7 +17,7 @@
   },
   "homepage": "https://github.com/gx0r/connect-session-knex",
   "scripts": {
-    "build": "npx tsc",
+    "build": "tsc",
     "example": "node examples/example-mjs.mjs",
     "test": "NODE_OPTIONS=--enable-source-maps node --test",
     "lint": "eslint src/ src/",
