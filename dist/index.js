@@ -7,8 +7,8 @@ exports.ConnectSessionKnexStore = void 0;
 const knex_1 = __importDefault(require("knex"));
 const express_session_1 = require("express-session");
 const utils_1 = require("./utils");
+const ONE_DAY = 86400000;
 class ConnectSessionKnexStore extends express_session_1.Store {
-    ONE_DAY = 86400000;
     clearInterval = 60000;
     createtable = true;
     disableDbCleanup = false;
@@ -104,7 +104,7 @@ class ConnectSessionKnexStore extends express_session_1.Store {
         const self = this;
         const { maxAge } = session.cookie;
         const now = new Date().getTime();
-        const expired = maxAge ? now + maxAge : now + this.ONE_DAY;
+        const expired = maxAge ? now + maxAge : now + ONE_DAY;
         const sess = JSON.stringify(session);
         const dbDate = (0, utils_1.dateAsISO)(self.knex, expired);
         try {
