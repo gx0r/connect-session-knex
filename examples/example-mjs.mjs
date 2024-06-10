@@ -1,11 +1,12 @@
 import express from "express";
 import session from "express-session";
 import { ConnectSessionKnexStore } from "../dist/index.js";
-import Knex from "knex";
+// import { ConnectSessionKnexStore } from "connect-session-knex";
+import knexConstructor from "knex";
 
 const app = express(); // Express 4
 const store = new ConnectSessionKnexStore({
-  knex: Knex({
+  knex: knexConstructor({
     client: "sqlite",
     // connection: ":memory:",
     connection: {

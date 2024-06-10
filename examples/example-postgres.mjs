@@ -1,11 +1,12 @@
 import express from "express";
 import session from "express-session";
 import { ConnectSessionKnexStore } from "../lib/index.mjs";
-import Knex from "knex";
+// import { ConnectSessionKnexStore } from "connect-session-knex";
+import knexConstructor from "knex";
 
 const app = express();
 
-const knex = Knex({
+const knex = knexConstructor({
   client: "pg",
   connection: {
     host: "127.0.0.1",
