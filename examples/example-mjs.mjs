@@ -12,7 +12,7 @@ const store = new ConnectSessionKnexStore({
       filename: "connect-session-knex.sqlite",
     },
   }),
-  disableDbCleanup: true,
+  cleanupInterval: 0, // disable session cleanup
 });
 
 app.use(
