@@ -27,6 +27,8 @@ app.use(
       maxAge: 10000, // ten seconds, for testing
     },
     store,
+    resave: false,
+    saveUninitialized: false,
   }),
 );
 

@@ -1,14 +1,14 @@
 import test from "node:test";
 import assert from "node:assert";
-import knex from "knex";
-import { ConnectSessionKnexStore } from "../lib/index.mjs";
+import knexConstructor from "knex";
+import { ConnectSessionKnexStore } from "../dist/index.js";
 
 const stores = [];
 
 stores.push(
   new ConnectSessionKnexStore({
-    disableDbCleanup: true,
-    knex: knex({
+    cleanupInterval: 0,
+    knex: knexConstructor({
       client: "sqlite",
       connection: ":memory:",
       // connection: {
@@ -21,7 +21,7 @@ stores.push(
 // Uncomment to test additional stores
 // stores.push(
 //   new ConnectSessionKnexStore({
-//     knex: knex({
+//     knex: knexConstructor({
 //       client: "pg",
 //       connection: {
 //         host: "127.0.0.1",
@@ -30,13 +30,13 @@ stores.push(
 //         database: "travis_ci_test",
 //       },
 //     }),
-//     disableDbCleanup: true,
+//     cleanupInterval: 0,
 //   }),
 // );
 
 // stores.push(
 //   new ConnectSessionKnexStore({
-//     knex: knex({
+//     knex: knexConstructor({
 //       client: "mysql",
 //       connection: {
 //         host: "127.0.0.1",
@@ -45,7 +45,7 @@ stores.push(
 //         database: "travis_ci_test",
 //       },
 //     }),
-//     disableDbCleanup: true,
+//     cleanupInterval: 0,
 //   }),
 // );
 
@@ -187,11 +187,11 @@ stores.forEach((store) => {
     );
   });
 
-  test("no cleanup timeout when disableDbCleanup is true", () => {
-    assert.equal(store.getNextDbCleanup(), null);
+  test("no cleanup timeout when cleanupInterval is 0", () => {
+    assert.equal(store.nextDbCleanup, null);
   });
 
   test("cleanup", async () => {
-    await store.knex.destroy();
+    await store.options.knex.destroy();
   });
 });

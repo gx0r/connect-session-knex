@@ -6,14 +6,12 @@ The format is based on Keep a Changelog and this project adheres to Semantic Ver
 
 ## 5.0.0
 
-- Updated code for modern Node 18+
-- Class syntax instead of prototype
-- async/await
+- Rewritten in TypeScript (with class syntax and async/await) targeting modern Node 18+
+- Tests rewritten to use Node test runner
 - eslint
 - prettier
-- Node test runner
-- ES Modules (.mjs)
-- ES Module example
+- ES Module examples (.mjs)
+- Configuation options improved
 
 ## 4.0.2
 

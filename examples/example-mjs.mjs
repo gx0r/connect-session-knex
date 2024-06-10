@@ -1,6 +1,6 @@
 import express from "express";
 import session from "express-session";
-import { ConnectSessionKnexStore } from "../lib/index.mjs";
+import { ConnectSessionKnexStore } from "../dist/index.js";
 import Knex from "knex";
 
 const app = express(); // Express 4
@@ -12,7 +12,7 @@ const store = new ConnectSessionKnexStore({
       filename: "connect-session-knex.sqlite",
     },
   }),
-  disableDbCleanup: true,
+  cleanupInterval: 0, // disable session cleanup
 });
 
 app.use(
@@ -22,6 +22,8 @@ app.use(
       maxAge: 30000, // 30 seconds for testing
     },
     store,
+    resave: false,
+    saveUninitialized: false,
   }),
 );
 

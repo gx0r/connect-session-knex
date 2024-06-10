@@ -2,15 +2,12 @@
   "name": "connect-session-knex",
   "description": "A knex.js session store for Express and Connect",
   "version": "5.0.0",
-  "main": "lib/index.js",
-  "typings": "typings/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "engines": {
     "node": ">=18"
   },
-  "files": [
-    "lib/**/*",
-    "typings/**/*"
-  ],
+  "files": ["dist/**/*"],
   "repository": {
     "type": "git",
     "url": "git@github.com:gx0r/connect-session-knex.git"
@@ -20,10 +17,11 @@
   },
   "homepage": "https://github.com/gx0r/connect-session-knex",
   "scripts": {
+    "build": "tsc",
     "example": "node examples/example-mjs.mjs",
-    "test": "node --test",
-    "lint": "eslint lib/ test/",
-    "lint-fix": "eslint --fix lib/ test/"
+    "test": "NODE_OPTIONS=--enable-source-maps node --test",
+    "lint": "eslint src/ src/",
+    "lint-fix": "eslint --fix src/ test/"
   },
   "license": "ISC",
   "dependencies": {
@@ -31,7 +29,12 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.4.0",
-    "eslint": "^9.4.0",
+    "@types/express": "^4.17.21",
+    "@types/express-session": "^1.18.0",
+    "@types/node": "^20.14.2",
+    "@typescript-eslint/eslint-plugin": "^7.12.0",
+    "@typescript-eslint/parser": "^7.12.0",
+    "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "express": "^4.18.2",
     "express-session": "^1.18.0",
@@ -39,6 +42,7 @@
     "mysql": "^2.18.1",
     "pg": "^8.11.3",
     "prettier": "^3.3.1",
-    "sqlite3": "^5.1.6"
+    "sqlite3": "^5.1.6",
+    "typescript": "^5.4.5"
   }
 }

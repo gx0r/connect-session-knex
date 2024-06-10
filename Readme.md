@@ -25,16 +25,15 @@ See [Changelog.md](Changelog.md)
 
 ## Options
 
-- `tablename='sessions'` Tablename to use. Defaults to 'sessions'.
-- `sidfieldname='sid'` Field name in table to use for storing session ids. Defaults to 'sid'.
+- `cleanupInterval` milliseconds between clearing expired sessions. Defaults to 60000. 0 disables the automatic clearing of expired sessions.
+- `createTable` if the table for sessions should be created automatically or not.
 - `knex` knex instance to use. Defaults to a new knex instance, using sqlite3 with a file named 'connect-session-knex.sqlite'
-- `createtable` if the table for sessions should be created automatically or not.
-- `clearInterval` milliseconds between clearing expired sessions. Defaults to 60000.
-- `disableDbCleanup` disables the automatic clearing of expired sessions. Defaults to false.
+- `tableName='sessions'` Tablename to use. Defaults to 'sessions'.
+- `sidFieldName='sid'` Field name in table to use for storing session ids. Defaults to 'sid'.
 
-If the table does not exist in the schema, this module will attempt to create it unless the 'createtable' option is false.
+If the table does not exist in the schema, this module will attempt to create it unless the `createTable` option is false.
 
-If a knex instance is not provided, this module will attempt to create a sqlite3 database, with a file named 'connect-session-knex.sqlite', in the working directory of the process.
+If a knex instance is not provided, this module will attempt to create a sqlite3 database, with a file named `connect-session-knex.sqlite`, in the working directory of the process.
 
 ## Schema
 
