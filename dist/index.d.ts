@@ -2,25 +2,19 @@
 import { Knex } from "knex";
 import { SessionData, Store } from "express-session";
 interface Options {
-    clearInterval?: number;
-    disableDbCleanup?: boolean;
-    createtable?: boolean;
-    knex?: Knex;
-    onDbCleanupError?: (err: Error) => void;
-    tablename?: string;
-    sidfieldname?: string;
+    clearInterval: number;
+    disableDbCleanup: boolean;
+    createtable: boolean;
+    knex: Knex;
+    onDbCleanupError: (err: unknown) => void;
+    tablename: string;
+    sidfieldname: string;
 }
 export declare class ConnectSessionKnexStore extends Store {
-    clearInterval: number;
-    createtable: boolean;
-    disableDbCleanup: boolean;
-    knex: Knex;
+    options: Options;
     nextDbCleanup: NodeJS.Timeout | undefined;
     ready: Promise<unknown>;
-    sidfieldname: string;
-    tablename: string;
-    onDbCleanupError: (_: Error) => void;
-    constructor(options: Options);
+    constructor(options: Partial<Options>);
     get(sid: string, callback: (err: any, session?: SessionData | null) => void): Promise<any>;
     set(sid: string, session: SessionData, callback?: (err?: any) => void): Promise<any>;
     touch?(sid: string, session: SessionData, callback?: () => void): Promise<number | null>;
@@ -30,7 +24,7 @@ export declare class ConnectSessionKnexStore extends Store {
     all(callback: (err: any, obj?: SessionData[] | {
         [sid: string]: SessionData;
     } | null) => void): Promise<any[]>;
-    setNextDbCleanup(store: ConnectSessionKnexStore, interval: number, callback?: (err?: any) => void): Promise<void>;
+    queueNextDbCleanup(): Promise<void>;
     stopDbCleanup(): void;
     getNextDbCleanup(): NodeJS.Timeout | undefined;
 }

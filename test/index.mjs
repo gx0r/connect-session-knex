@@ -192,6 +192,6 @@ stores.forEach((store) => {
   });
 
   test("cleanup", async () => {
-    await store.knex.destroy();
+    await store.options.knex.destroy();
   });
 });
