@@ -1,4 +1,4 @@
-import knex, { Knex } from "knex";
+import knexConstructor, { Knex } from "knex";
 import { SessionData, Store } from "express-session";
 import {
   dateAsISO,
@@ -31,10 +31,10 @@ export class ConnectSessionKnexStore extends Store {
   nextDbCleanup: NodeJS.Timeout | undefined;
   ready: Promise<unknown>;
 
-  constructor(options: Partial<Options>) {
+  constructor(_options: Partial<Options>) {
     super();
 
-    this.options = {
+    const options = this.options = {
       clearInterval: 60000,
       createtable: true,
       disableDbCleanup: false,
@@ -43,10 +43,10 @@ export class ConnectSessionKnexStore extends Store {
       onDbCleanupError: (err: unknown) => {
         console.error(err);
       },
-      ...options,
+      ..._options,
       knex:
-        options.knex ??
-        knex({
+        _options.knex ??
+        knexConstructor({
           client: "sqlite3",
           connection: {
             filename: "connect-session-knex.sqlite",
@@ -54,20 +54,22 @@ export class ConnectSessionKnexStore extends Store {
         }),
     };
 
-    this.ready = this.options.knex.schema
-      .hasTable(this.options.tablename)
+    const { createtable, knex, sidfieldname, tablename } = options;
+
+    this.ready = knex.schema
+      .hasTable(tablename)
       .then((exists) => {
-        if (!exists && this.options.createtable) {
+        if (!exists && createtable) {
           return new Promise((res) => {
-            isDbSupportJSON(this.options.knex).then((isSupport) =>
-              this.options.knex.schema.createTable(this.options.tablename, (table) => {
-                table.string(this.options.sidfieldname).primary();
+            isDbSupportJSON(knex).then((isSupport) =>
+              knex.schema.createTable(tablename, (table) => {
+                table.string(sidfieldname).primary();
                 if (isSupport) {
                   table.json("sess").notNullable();
                 } else {
                   table.text("sess").notNullable();
                 }
-                if (isMySQL(this.options.knex) || isMSSQL(this.options.knex)) {
+                if (isMySQL(knex) || isMSSQL(knex)) {
                   table.dateTime("expired").notNullable().index();
                 } else {
                   table.timestamp("expired").notNullable().index();
@@ -93,13 +95,14 @@ export class ConnectSessionKnexStore extends Store {
   ) {
     try {
       await this.ready;
-      const condition = expiredCondition(this.options.knex);
+      const { knex, tablename, sidfieldname } = this.options;
+      const condition = expiredCondition(knex);
 
-      const response = await this.options.knex
+      const response = await knex
         .select("sess")
-        .from(this.options.tablename)
-        .where(this.options.sidfieldname, "=", sid)
-        .andWhereRaw(condition, dateAsISO(this.options.knex));
+        .from(tablename)
+        .where(sidfieldname, "=", sid)
+        .andWhereRaw(condition, dateAsISO(knex));
 
       let retVal;
       if (response[0]) {
@@ -117,59 +120,60 @@ export class ConnectSessionKnexStore extends Store {
   }
 
   async set(sid: string, session: SessionData, callback?: (err?: any) => void) {
+    const { knex, tablename, sidfieldname } = this.options;
     const { maxAge } = session.cookie;
     const now = new Date().getTime();
     const expired = maxAge ? now + maxAge : now + 86400000; // 86400000 = add one day
     const sess = JSON.stringify(session);
 
-    const dbDate = dateAsISO(this.options.knex, expired);
+    const dbDate = dateAsISO(knex, expired);
 
     try {
       await this.ready;
 
       let retVal;
-      if (isSqlite3(this.options.knex)) {
+      if (isSqlite3(knex)) {
         // sqlite optimized query
-        retVal = await this.options.knex.raw(
-          getSqliteFastQuery(this.options.tablename, this.options.sidfieldname),
+        retVal = await knex.raw(
+          getSqliteFastQuery(tablename, sidfieldname),
           [sid, dbDate, sess],
         );
       } else if (
-        isPostgres(this.options.knex) &&
-        parseFloat(this.options.knex.client.version) >= 9.2
+        isPostgres(knex) &&
+        parseFloat(knex.client.version) >= 9.2
       ) {
         // postgresql optimized query
-        retVal = await this.options.knex.raw(
-          getPostgresFastQuery(this.options.tablename, this.options.sidfieldname),
+        retVal = await knex.raw(
+          getPostgresFastQuery(tablename, sidfieldname),
           [sid, dbDate, sess],
         );
-      } else if (isMySQL(this.options.knex)) {
-        retVal = await this.options.knex.raw(
-          getMysqlFastQuery(this.options.tablename, this.options.sidfieldname),
+      } else if (isMySQL(knex)) {
+        retVal = await knex.raw(
+          getMysqlFastQuery(tablename, sidfieldname),
           [sid, dbDate, sess],
         );
-      } else if (isMSSQL(this.options.knex)) {
-        retVal = await this.options.knex.raw(
-          getMssqlFastQuery(this.options.tablename, this.options.sidfieldname),
+      } else if (isMSSQL(knex)) {
+        retVal = await knex.raw(
+          getMssqlFastQuery(tablename, sidfieldname),
           [sid, dbDate, sess],
         );
       } else {
-        retVal = await this.options.knex.transaction(async (trx) => {
+        retVal = await knex.transaction(async (trx) => {
           const foundKeys = await trx
             .select("*")
             .forUpdate()
-            .from(this.options.tablename)
-            .where(this.options.sidfieldname, "=", sid);
+            .from(tablename)
+            .where(sidfieldname, "=", sid);
 
           if (foundKeys.length === 0) {
-            await trx.from(this.options.tablename).insert({
-              [this.options.sidfieldname]: sid,
+            await trx.from(tablename).insert({
+              [sidfieldname]: sid,
               expired: dbDate,
               sess,
             });
           } else {
-            await trx(this.options.tablename)
-              .where(this.options.sidfieldname, "=", sid)
+            await trx(tablename)
+              .where(sidfieldname, "=", sid)
               .update({
                 expired: dbDate,
                 sess,
@@ -187,14 +191,16 @@ export class ConnectSessionKnexStore extends Store {
   }
 
   async touch?(sid: string, session: SessionData, callback?: () => void) {
-    if (session && session.cookie && session.cookie.expires) {
-      const condition = expiredCondition(this.options.knex);
+    const { knex, tablename, sidfieldname } = this.options;
 
-      const retVal = await this.options.knex(this.options.tablename)
-        .where(this.options.sidfieldname, "=", sid)
-        .andWhereRaw(condition, dateAsISO(this.options.knex))
+    if (session && session.cookie && session.cookie.expires) {
+      const condition = expiredCondition(knex);
+
+      const retVal = await knex(tablename)
+        .where(sidfieldname, "=", sid)
+        .andWhereRaw(condition, dateAsISO(knex))
         .update({
-          expired: dateAsISO(this.options.knex, session.cookie.expires),
+          expired: dateAsISO(knex, session.cookie.expires),
         });
 
       callback?.();
@@ -205,12 +211,14 @@ export class ConnectSessionKnexStore extends Store {
   }
 
   async destroy(sid: string, callback?: (err?: any) => void) {
+    const { knex, tablename, sidfieldname } = this.options;
     await this.ready;
+
     try {
-      const retVal = await this.options.knex
+      const retVal = await knex
         .del()
-        .from(this.options.tablename)
-        .where(this.options.sidfieldname, "=", sid);
+        .from(tablename)
+        .where(sidfieldname, "=", sid);
       callback?.(null);
       return retVal;
     } catch (err) {
@@ -220,13 +228,14 @@ export class ConnectSessionKnexStore extends Store {
   }
 
   async length(callback: (err: any, length?: number) => void) {
+    const { knex, tablename, sidfieldname } = this.options;
     await this.ready;
 
     try {
       let retVal;
-      const response = await this.options.knex
-        .count(`${this.options.sidfieldname} as count`)
-        .from(this.options.tablename);
+      const response = await knex
+        .count(`${sidfieldname} as count`)
+        .from(tablename);
 
       if (response.length === 1 && "count" in response[0]) {
         retVal = +(response[0].count ?? 0);
@@ -241,9 +250,11 @@ export class ConnectSessionKnexStore extends Store {
   }
 
   async clear(callback?: (err?: any) => void) {
+    const { knex, tablename } = this.options;
+
     try {
       await this.ready;
-      const res = await this.options.knex.del().from(this.options.tablename);
+      const res = await knex.del().from(tablename);
       callback?.(null);
       return res;
     } catch (err) {
@@ -258,14 +269,15 @@ export class ConnectSessionKnexStore extends Store {
       obj?: SessionData[] | { [sid: string]: SessionData } | null,
     ) => void,
   ) {
+    const { knex, tablename } = this.options;
     await this.ready;
 
     try {
-      const condition = expiredCondition(this.options.knex);
-      const rows = await this.options.knex
+      const condition = expiredCondition(knex);
+      const rows = await knex
         .select("sess")
-        .from(this.options.tablename)
-        .whereRaw(condition, dateAsISO(this.options.knex));
+        .from(tablename)
+        .whereRaw(condition, dateAsISO(knex));
 
       const items = rows.map((row) => {
         if (typeof row.sess === "string") {
@@ -284,19 +296,21 @@ export class ConnectSessionKnexStore extends Store {
   }
 
   async queueNextDbCleanup() {
+    const { knex, tablename, sidfieldname } = this.options;
     await this.ready;
+
     try {
-      let condition = `expired < CAST(? as ${timestampTypeName(this.options.knex)})`;
-      if (isSqlite3(this.options.knex)) {
+      let condition = `expired < CAST(? as ${timestampTypeName(knex)})`;
+      if (isSqlite3(knex)) {
         // sqlite3 date condition is a special case.
         condition = "datetime(expired) < datetime(?)";
-      } else if (isOracle(this.options.knex)) {
-        condition = `"expired" < CAST(? as ${timestampTypeName(this.options.knex)})`;
+      } else if (isOracle(knex)) {
+        condition = `"expired" < CAST(? as ${timestampTypeName(knex)})`;
       }
       await this.options
-        .knex(this.options.tablename)
+        .knex(tablename)
         .del()
-        .whereRaw(condition, dateAsISO(this.options.knex));
+        .whereRaw(condition, dateAsISO(knex));
     } catch (err: unknown) {
       this.options.onDbCleanupError?.(err);
     } finally {

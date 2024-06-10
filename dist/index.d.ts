@@ -14,7 +14,7 @@ export declare class ConnectSessionKnexStore extends Store {
     options: Options;
     nextDbCleanup: NodeJS.Timeout | undefined;
     ready: Promise<unknown>;
-    constructor(options: Partial<Options>);
+    constructor(_options: Partial<Options>);
     get(sid: string, callback: (err: any, session?: SessionData | null) => void): Promise<any>;
     set(sid: string, session: SessionData, callback?: (err?: any) => void): Promise<any>;
     touch?(sid: string, session: SessionData, callback?: () => void): Promise<number | null>;
