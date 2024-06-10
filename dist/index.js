@@ -10,7 +10,7 @@ const utils_1 = require("./utils");
 class ConnectSessionKnexStore extends express_session_1.Store {
     options;
     nextDbCleanup;
-    ready;
+    ready; // Schema created
     constructor(_options) {
         super();
         const options = this.options = {
@@ -32,37 +32,32 @@ class ConnectSessionKnexStore extends express_session_1.Store {
                 }),
         };
         const { createtable, knex, sidfieldname, tablename } = options;
-        this.ready = knex.schema
-            .hasTable(tablename)
-            .then((exists) => {
-            if (!exists && createtable) {
-                return new Promise((res) => {
-                    (0, utils_1.isDbSupportJSON)(knex).then((isSupport) => knex.schema.createTable(tablename, (table) => {
-                        table.string(sidfieldname).primary();
-                        if (isSupport) {
-                            table.json("sess").notNullable();
-                        }
-                        else {
-                            table.text("sess").notNullable();
-                        }
-                        if ((0, utils_1.isMySQL)(knex) || (0, utils_1.isMSSQL)(knex)) {
-                            table.dateTime("expired").notNullable().index();
-                        }
-                        else {
-                            table.timestamp("expired").notNullable().index();
-                        }
-                        res(null);
-                    }));
+        this.ready = (async () => {
+            if (!(await knex.schema.hasTable(tablename))) {
+                if (!createtable) {
+                    throw new Error(`Missing ${tablename} table`);
+                }
+                const supportsJson = await (0, utils_1.isDbSupportJSON)(knex);
+                await knex.schema.createTable(tablename, (table) => {
+                    table.string(sidfieldname).primary();
+                    if (supportsJson) {
+                        table.json("sess").notNullable();
+                    }
+                    else {
+                        table.text("sess").notNullable();
+                    }
+                    if ((0, utils_1.isMySQL)(knex) || (0, utils_1.isMSSQL)(knex)) {
+                        table.dateTime("expired").notNullable().index();
+                    }
+                    else {
+                        table.timestamp("expired").notNullable().index();
+                    }
                 });
             }
-            return exists;
-        })
-            .then((exists) => {
-            if (exists && !options.disableDbCleanup) {
+            if (!options.disableDbCleanup) {
                 this.queueNextDbCleanup();
             }
-            return null;
-        });
+        })();
     }
     async get(sid, callback) {
         try {

@@ -29,7 +29,7 @@ interface Options {
 export class ConnectSessionKnexStore extends Store {
   options: Options;
   nextDbCleanup: NodeJS.Timeout | undefined;
-  ready: Promise<unknown>;
+  ready: Promise<unknown>; // Schema created
 
   constructor(_options: Partial<Options>) {
     super();
@@ -56,37 +56,32 @@ export class ConnectSessionKnexStore extends Store {
 
     const { createtable, knex, sidfieldname, tablename } = options;
 
-    this.ready = knex.schema
-      .hasTable(tablename)
-      .then((exists) => {
-        if (!exists && createtable) {
-          return new Promise((res) => {
-            isDbSupportJSON(knex).then((isSupport) =>
-              knex.schema.createTable(tablename, (table) => {
-                table.string(sidfieldname).primary();
-                if (isSupport) {
-                  table.json("sess").notNullable();
-                } else {
-                  table.text("sess").notNullable();
-                }
-                if (isMySQL(knex) || isMSSQL(knex)) {
-                  table.dateTime("expired").notNullable().index();
-                } else {
-                  table.timestamp("expired").notNullable().index();
-                }
-                res(null);
-              }),
-            );
-          });
+    this.ready = (async () => {
+      if (!(await knex.schema.hasTable(tablename))) {
+        if (!createtable) {
+          throw new Error(`Missing ${tablename} table`);
         }
-        return exists;
-      })
-      .then((exists) => {
-        if (exists && !options.disableDbCleanup) {
-          this.queueNextDbCleanup();
-        }
-        return null;
-      });
+        const supportsJson = await isDbSupportJSON(knex);
+
+        await knex.schema.createTable(tablename, (table) => {
+          table.string(sidfieldname).primary();
+          if (supportsJson) {
+            table.json("sess").notNullable();
+          } else {
+            table.text("sess").notNullable();
+          }
+          if (isMySQL(knex) || isMSSQL(knex)) {
+            table.dateTime("expired").notNullable().index();
+          } else {
+            table.timestamp("expired").notNullable().index();
+          }
+        });
+      }
+
+      if (!options.disableDbCleanup) {
+        this.queueNextDbCleanup();
+      }
+    })();
   }
 
   async get(
