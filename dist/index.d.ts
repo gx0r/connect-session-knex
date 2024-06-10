@@ -2,13 +2,13 @@
 import { Knex } from "knex";
 import { SessionData, Store } from "express-session";
 interface Options {
-    clearInterval: number;
+    clearInterval?: number;
     disableDbCleanup?: boolean;
     createtable?: boolean;
     knex?: Knex;
     onDbCleanupError?: (err: Error) => void;
-    tablename: string;
-    sidfieldname: string;
+    tablename?: string;
+    sidfieldname?: string;
 }
 export declare class ConnectSessionKnexStore extends Store {
     clearInterval: number;
@@ -19,6 +19,7 @@ export declare class ConnectSessionKnexStore extends Store {
     ready: Promise<unknown>;
     sidfieldname: string;
     tablename: string;
+    onDbCleanupError: (_: Error) => void;
     constructor(options: Options);
     get(sid: string, callback: (err: any, session?: SessionData | null) => void): Promise<any>;
     set(sid: string, session: SessionData, callback?: (err?: any) => void): Promise<any>;
@@ -31,7 +32,7 @@ export declare class ConnectSessionKnexStore extends Store {
     } | null) => void): Promise<any[]>;
     setNextDbCleanup(store: ConnectSessionKnexStore, interval: number, callback?: (err?: any) => void): Promise<void>;
     stopDbCleanup(): void;
-    getNextDbCleanup(): NodeJS.Timeout | null;
+    getNextDbCleanup(): NodeJS.Timeout | undefined;
 }
 export {};
 //# sourceMappingURL=index.d.ts.map

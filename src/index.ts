@@ -74,22 +74,20 @@ export class ConnectSessionKnexStore extends Store {
         },
       });
 
-    const self = this;
-
     this.ready = this.knex.schema
-      .hasTable(self.tablename)
+      .hasTable(this.tablename)
       .then((exists) => {
-        if (!exists && self.createtable) {
+        if (!exists && this.createtable) {
           return new Promise((res) => {
-            isDbSupportJSON(self.knex).then((isSupport) =>
-              self.knex.schema.createTable(self.tablename, (table) => {
-                table.string(self.sidfieldname).primary();
+            isDbSupportJSON(this.knex).then((isSupport) =>
+              this.knex.schema.createTable(this.tablename, (table) => {
+                table.string(this.sidfieldname).primary();
                 if (isSupport) {
                   table.json("sess").notNullable();
                 } else {
                   table.text("sess").notNullable();
                 }
-                if (isMySQL(self.knex) || isMSSQL(self.knex)) {
+                if (isMySQL(this.knex) || isMSSQL(this.knex)) {
                   table.dateTime("expired").notNullable().index();
                 } else {
                   table.timestamp("expired").notNullable().index();
@@ -104,9 +102,9 @@ export class ConnectSessionKnexStore extends Store {
       .then((exists) => {
         if (exists && !options.disableDbCleanup) {
           this.setNextDbCleanup(
-            self,
-            self.clearInterval,
-            self.onDbCleanupError,
+            this,
+            this.clearInterval,
+            this.onDbCleanupError,
           );
         }
         return null;
@@ -143,60 +141,59 @@ export class ConnectSessionKnexStore extends Store {
   }
 
   async set(sid: string, session: SessionData, callback?: (err?: any) => void) {
-    const self = this;
     const { maxAge } = session.cookie;
     const now = new Date().getTime();
     const expired = maxAge ? now + maxAge : now + 86400000; // 86400000 = add one day
     const sess = JSON.stringify(session);
 
-    const dbDate = dateAsISO(self.knex, expired);
+    const dbDate = dateAsISO(this.knex, expired);
 
     try {
       await this.ready;
 
       let retVal;
-      if (isSqlite3(self.knex)) {
+      if (isSqlite3(this.knex)) {
         // sqlite optimized query
-        retVal = await self.knex.raw(
-          getSqliteFastQuery(self.tablename, self.sidfieldname),
+        retVal = await this.knex.raw(
+          getSqliteFastQuery(this.tablename, this.sidfieldname),
           [sid, dbDate, sess],
         );
       } else if (
-        isPostgres(self.knex) &&
-        parseFloat(self.knex.client.version) >= 9.2
+        isPostgres(this.knex) &&
+        parseFloat(this.knex.client.version) >= 9.2
       ) {
         // postgresql optimized query
-        retVal = await self.knex.raw(
-          getPostgresFastQuery(self.tablename, self.sidfieldname),
+        retVal = await this.knex.raw(
+          getPostgresFastQuery(this.tablename, this.sidfieldname),
           [sid, dbDate, sess],
         );
-      } else if (isMySQL(self.knex)) {
-        retVal = await self.knex.raw(
-          getMysqlFastQuery(self.tablename, self.sidfieldname),
+      } else if (isMySQL(this.knex)) {
+        retVal = await this.knex.raw(
+          getMysqlFastQuery(this.tablename, this.sidfieldname),
           [sid, dbDate, sess],
         );
-      } else if (isMSSQL(self.knex)) {
-        retVal = await self.knex.raw(
-          getMssqlFastQuery(self.tablename, self.sidfieldname),
+      } else if (isMSSQL(this.knex)) {
+        retVal = await this.knex.raw(
+          getMssqlFastQuery(this.tablename, this.sidfieldname),
           [sid, dbDate, sess],
         );
       } else {
-        retVal = await self.knex.transaction(async (trx) => {
+        retVal = await this.knex.transaction(async (trx) => {
           const foundKeys = await trx
             .select("*")
             .forUpdate()
-            .from(self.tablename)
-            .where(self.sidfieldname, "=", sid);
+            .from(this.tablename)
+            .where(this.sidfieldname, "=", sid);
 
           if (foundKeys.length === 0) {
-            await trx.from(self.tablename).insert({
-              [self.sidfieldname]: sid,
+            await trx.from(this.tablename).insert({
+              [this.sidfieldname]: sid,
               expired: dbDate,
               sess,
             });
           } else {
-            await trx(self.tablename)
-              .where(self.sidfieldname, "=", sid)
+            await trx(this.tablename)
+              .where(this.sidfieldname, "=", sid)
               .update({
                 expired: dbDate,
                 sess,
