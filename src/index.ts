@@ -17,13 +17,13 @@ import {
 } from "./utils";
 
 interface Options {
-  clearInterval: number;
+  clearInterval?: number;
   disableDbCleanup?: boolean;
   createtable?: boolean;
   knex?: Knex;
   onDbCleanupError?: (err: Error) => void;
-  tablename: string;
-  sidfieldname: string;
+  tablename?: string;
+  sidfieldname?: string;
 }
 
 export class ConnectSessionKnexStore extends Store {
@@ -35,6 +35,7 @@ export class ConnectSessionKnexStore extends Store {
   ready: Promise<unknown>;
   sidfieldname = "sid";
   tablename = "sessions";
+  onDbCleanupError = (_: Error) => {};
 
   constructor(options: Options) {
     super();
@@ -57,6 +58,10 @@ export class ConnectSessionKnexStore extends Store {
 
     if (options.sidfieldname) {
       this.sidfieldname = options.sidfieldname;
+    }
+
+    if (options.onDbCleanupError) {
+      this.onDbCleanupError = options.onDbCleanupError;
     }
 
     this.knex =
@@ -100,8 +105,8 @@ export class ConnectSessionKnexStore extends Store {
         if (exists && !options.disableDbCleanup) {
           this.setNextDbCleanup(
             self,
-            options.clearInterval,
-            options.onDbCleanupError,
+            self.clearInterval,
+            self.onDbCleanupError,
           );
         }
         return null;
@@ -352,6 +357,6 @@ export class ConnectSessionKnexStore extends Store {
 
   /* fetch the dbCleanupTimeout */
   getNextDbCleanup() {
-    return this.nextDbCleanup ? this.nextDbCleanup : null;
+    return this.nextDbCleanup;
   }
 }
