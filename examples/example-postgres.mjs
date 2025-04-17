@@ -18,7 +18,7 @@ const knex = knexConstructor({
 
 const store = new ConnectSessionKnexStore({
   knex,
-  tablename: "sessions", // optional. Defaults to 'sessions'
+  tableName: "sessions", // optional. Defaults to 'sessions'
 });
 
 app.use(
