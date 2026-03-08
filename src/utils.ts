@@ -68,23 +68,9 @@ export function dateAsISO(
  */
 export function getPostgresFastQuery(tablename: string, sidfieldname: string) {
   return (
-    `with new_values (${sidfieldname}, expired, sess) as (` +
-    "  values (?, ?::timestamp with time zone, ?::json)" +
-    "), " +
-    "upsert as " +
-    "( " +
-    `  update "${tablename}" cs set ` +
-    `    ${sidfieldname} = nv.${sidfieldname}, ` +
-    "    expired = nv.expired, " +
-    "    sess = nv.sess " +
-    "  from new_values nv " +
-    `  where cs.${sidfieldname} = nv.${sidfieldname} ` +
-    "  returning cs.* " +
-    ")" +
-    `insert into "${tablename}" (${sidfieldname}, expired, sess) ` +
-    `select ${sidfieldname}, expired, sess ` +
-    "from new_values " +
-    `where not exists (select 1 from upsert up where up.${sidfieldname} = new_values.${sidfieldname})`
+    `insert into "${tablename}" (${sidfieldname}, expired, sess)` +
+    `values (?, ? :: timestamp with time zone, ? :: json) on conflict (${sidfieldname}) do ` +
+    `update set expired = excluded.expired, sess = excluded.sess`
   );
 }
 
