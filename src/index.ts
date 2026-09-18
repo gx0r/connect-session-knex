@@ -20,6 +20,7 @@ interface Options {
   cleanupInterval: number; // 0 disables
   createTable: boolean;
   knex: Knex;
+  db?: Knex;
   onDbCleanupError: (err: unknown) => void;
   tableName: string;
   sidFieldName: string;
@@ -44,6 +45,7 @@ export class ConnectSessionKnexStore extends Store {
       ...incomingOptions,
       knex:
         incomingOptions.knex ??
+        incomingOptions.db ??
         knexConstructor({
           client: "sqlite3",
           connection: {
